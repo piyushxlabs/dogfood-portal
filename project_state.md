@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 8: Role-Isolated Judging Route Handler (T2.judge_scores & T2.peer_scores - app/api/judge/scores/route.ts)
+- **Last Completed Step:** Step 9: Streaming CSV Export Route Handler (T2.csv_export - app/api/export.csv/route.ts)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -22,5 +22,7 @@
   - Automatic portal root redirect from `/` to `/projects` (`app/page.tsx`)
   - Deadline-enforced submission Route Handler (`app/projects/new/route.ts`) refusing late submissions with HTTP 400 and logging audit violations
   - Role-isolated judging Route Handler (`app/api/judge/scores/route.ts`) enforcing FIG. 02 Matrix (401 unauthenticated, 403 participant, 403 peer score probe, 200 own score access, and 200 organizer inspection) plus ballot submission (`POST /api/judge/scores`)
-- **Pending Next Step:** Step 9: Streaming CSV Export Route Handler (T2.csv_export - app/api/export.csv/route.ts)
+  - High-throughput streaming CSV export Route Handler (`app/api/export.csv/route.ts`) with RFC 4180 compliance, organizer/admin authorization, and audit logging
+  - Statistical Z-Score Normalization Engine (`lib/normalization.ts`) computing damped standardization, 1–5 scale calibration, and rank deltas
+- **Pending Next Step:** Step 10A: Premium Bento-Grid Gallery (T1 Frontend - app/projects/page.tsx, components/BentoGrid.tsx, components/ProjectCard.tsx)
 - **Known Issues / Blockers:** None.

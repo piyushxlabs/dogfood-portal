@@ -246,7 +246,37 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - `npx tsc --noEmit` passed with exit code 0.
 - `npm run build` compiled successfully in 2.5s with exit code 0 and generated dynamic route `ƒ /api/judge/scores`.
 - Pass
+## Step 9 — Streaming CSV Export Route Handler
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Implemented high-throughput streaming CSV Route Handler in `app/api/export.csv/route.ts` delivering RFC 4180 compliant CSV output.
+- Enforced FIG. 02 Role-Isolation Matrix via `requireRole(request, ['organizer', 'admin'])`: unauthenticated callers receive HTTP 401 Unauthorized; participants and judges receive HTTP 403 Forbidden.
+- Built mathematical Z-Score Normalization Engine in `lib/normalization.ts` implementing regularized standardization ($z_{ij} = \frac{S_{ij} - \mu_j}{\sigma_j + 0.0001}$), 1–5 scale calibration ($S'_{ij} = 3.00 + z_{ij} \cdot 0.85$), and rank delta calculation ($\Delta = \text{raw\_rank} - \text{normalized\_rank}$).
+- Configured chunked streaming via `ReadableStream` with headers `Content-Type: text/csv; charset=utf-8` and `Content-Disposition: attachment; filename="dogfood_results_export.csv"`.
+- Formatted header row to match `run.py` assertion: `rank,project_id,project_title,track_name,team_name,reviews_count,raw_average_score,normalized_score,rank_delta`.
+- Implemented audit logging recording `ORGANIZER_CSV_EXPORT` to `audit_logs`.
+- Created and executed test suite `scripts/test-csv-export.mjs` verifying role isolation, CSV header format, 41-project ranking, delta symmetry ($\sum \Delta = 0$), and rank shifts.
+
+**Files Created:**
+- `app/api/export.csv/route.ts` — Streaming CSV export Route Handler
+- `lib/normalization.ts` — Statistical Z-Score normalization and leaderboard engine
+- `scripts/test-csv-export.mjs` — Test suite validating CSV streaming, role isolation, and normalization math
+
+**Files Modified:**
+- None
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `node scripts/test-csv-export.mjs` executed with exit code 0: all assertions passed (organizer 200, participant 403, judge 403, unauthenticated 401, header format verified, 41 projects ranked, 18 climbed / 18 dropped symmetry, delta sum = 0).
+- `npx tsc --noEmit` passed with exit code 0.
+- `npm run build` compiled successfully in 2.8s with exit code 0 and generated dynamic route `ƒ /api/export.csv`.
+- Pass
 ---
+
 
 
 
