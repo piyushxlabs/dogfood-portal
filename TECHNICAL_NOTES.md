@@ -54,7 +54,12 @@ Dogfood 2026 Hackathon Portal Architectural Decisions
 **Decision:** Decomposed the gallery into modular client components (`SearchBar.tsx`, `TrackFilterPills.tsx`, `BentoGrid.tsx`, `ProjectCard.tsx`, `GalleryClient.tsx`) while preserving full server-side data embedding in the parent React Server Component (`app/projects/page.tsx`).
 **Reason:** In accordance with SYSTEM_SCOPE_AND_BEHAVIOR.md Section 3 and AGENT_MASTER_PLAN.md Step 10A, the gallery must provide fluid client-side interaction without page reloads, while embedding all 41 project titles directly into the initial server-rendered HTML response so that headless test runners like `run.py` (which do not execute JavaScript) can verify project presence.
 **Impact:** 100% deterministic PASS on `T1 gallery is public` and `T1 project from fixtures shown` in `run.py`, combined with rich dark-mode micro-animations (`hover:scale-[1.02] hover:-translate-y-1`) for human evaluation.
+## Step 10B — Split-Screen Speed Console & Real-Time Weighted Rubric Calculation
+**Decision:** Built an optimized split-screen evaluation console (`JudgeReviewConsole.tsx`) decoupling project inspection (left panel) from live criteria scoring (right panel) with real-time client-side calculation ($S_{ij} = 0.40 \cdot \text{func} + 0.35 \cdot \text{qual} + 0.25 \cdot \text{innov}$), linear keyboard cycling (`ArrowLeft` / `ArrowRight`), and atomic persistence via `POST /api/judge/scores`.
+**Reason:** In accordance with JUDGING.md Section 2 and AGENT_MASTER_PLAN.md Step 10B, judges need rapid, friction-free ballot recording with instant mathematical visual feedback without full page refreshes. Keyboard navigation enables evaluating 40+ projects in rapid sequence while enforcing strict rubric constraints (scores between 1.0 and 5.0).
+**Impact:** Seamless ballot intake and atomic updates in the PostgreSQL `scores` table, ensuring evaluator efficiency and robust data generation for downstream Z-score normalization.
 ---
+
 
 
 

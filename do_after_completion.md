@@ -1,15 +1,15 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 10A COMPLETION CHECKLIST
-# Premium Bento-Grid Gallery (T1 Frontend)
+# STEP 10B COMPLETION CHECKLIST
+# Judge Split-Screen Speed Console (T2 Frontend)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify the gallery UI verification script executes with zero errors:
+[ ] Verify the Judge Console test script executes with zero errors:
     ```
-    node scripts/test-gallery-ui.mjs
+    node scripts/test-judge-console.mjs
     ```
-    Expected: All checks PASS cleanly (all 6 components exist, search/filter algorithms verified, and all 41 project titles confirmed pre-rendered in `.next/server/app/projects.html`).
+    Expected: All checks PASS cleanly (all 4 components/routes exist, weighted rubric formula verified with 3.15 / 5.00 / 1.00 / 3.85, 41-project review navigation indices verified).
 
 [ ] Confirm TypeScript strict typechecking passes with zero errors:
     ```
@@ -20,29 +20,32 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Verify Next.js production build generates the static `/projects` route:
+[ ] Verify Next.js production build includes the judge routes:
     ```
     npm run build
     ```
-    Expected: Route table outputs `○ /projects (3.35 kB)` with status Compiled successfully.
+    Expected: Route table outputs:
+      `ƒ /judge`
+      `ƒ /judge/review/[projectId]`
+    Status: Compiled successfully with zero type errors.
 
 [ ] Verify Git working tree is clean and tracks all new and modified files:
     ```
     git status
     ```
-    Expected: Untracked and modified files appear staged/ready, along with updated tracking files.
+    Expected: `components/RubricSlider.tsx`, `components/JudgeReviewConsole.tsx`, `app/judge/page.tsx`, `app/judge/review/[projectId]/page.tsx`, and `scripts/test-judge-console.mjs` show as tracked/staged, along with updated tracking files.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `components/SearchBar.tsx` — Client search input with clear button and accessible element IDs.
-[ ] File: `components/TrackFilterPills.tsx` — Track category pill selector with live project counts and active toggle states.
-[ ] File: `components/BentoGrid.tsx` — Responsive bento grid layout container (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`).
-[ ] File: `components/ProjectCard.tsx` — Enhanced dark card with `hover:scale-[1.02] hover:-translate-y-1` lift animations, track badges, and unique IDs.
-[ ] File: `components/GalleryClient.tsx` — Composed client component orchestrating search, track filters, and bento grid layout.
-[ ] File: `scripts/test-gallery-ui.mjs` — Automated unit test suite verifying component presence, filtering, and server HTML embedding.
-[ ] Feature: Zero-Pagination Server HTML Guarantee — All 41 project titles are pre-rendered into the initial HTML response so `run.py` passes immediately without browser JavaScript.
+[ ] File: `components/RubricSlider.tsx` — Interactive rubric criterion slider with weight badge (40%, 35%, 25%), scale ticks, numeric readout, and descriptive hints.
+[ ] File: `components/JudgeReviewConsole.tsx` — Split-screen speed console client component with project inspector, rubric scoring, real-time weighted score calculation, keyboard shortcuts, and `POST /api/judge/scores` integration.
+[ ] File: `app/judge/review/[projectId]/page.tsx` — Server component for project speed review with fallback loading and encryption status badge.
+[ ] File: `app/judge/page.tsx` — Judge portal dashboard hub tracking assigned project completion status (Total, Evaluated, Pending) with direct review action links.
+[ ] File: `scripts/test-judge-console.mjs` — Automated unit test suite verifying rubric math, boundary constraints, and project review sequencing.
+[ ] Feature: Real-Time Rubric Scoring — Evaluates $S_{ij} = (0.40 \cdot \text{func}) + (0.35 \cdot \text{qual}) + (0.25 \cdot \text{innov})$ on every input change.
+[ ] Feature: Rapid Keyboard Navigation — Left [←] and Right [→] arrow keys cycle seamlessly between unreviewed projects.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -50,9 +53,9 @@
 
 Test 1 — Files Exist:
 ```
-dir components\SearchBar.tsx components\TrackFilterPills.tsx components\BentoGrid.tsx components\ProjectCard.tsx components\GalleryClient.tsx
+dir components\RubricSlider.tsx components\JudgeReviewConsole.tsx app\judge\page.tsx app\judge\review\[projectId]\page.tsx scripts\test-judge-console.mjs
 ```
-✅ Expected: All component files exist with non-zero byte size.
+✅ Expected: All 5 files exist with non-zero byte size.
 ❌ If missing: Re-generate the missing file immediately.
 
 Test 2 — Dependencies Check:
@@ -62,30 +65,30 @@ npm list lucide-react
 ✅ Expected: `lucide-react@0.468.0` installed and resolved.
 ❌ If errors: Run `npm install lucide-react@^0.468.0`.
 
-Test 3 — Gallery UI Verification Suite:
+Test 3 — Judge Console Verification Suite:
 ```
-node scripts/test-gallery-ui.mjs
+node scripts/test-judge-console.mjs
 ```
 ✅ Expected:
 ```
-[TEST-GALLERY-UI] Running Bento-Grid Gallery verification suite...
-✓ Test 1: All 6 gallery component files exist with valid non-zero content.
-✓ Test 2: Fixtures dataset verified: 41 projects across 8 tracks.
-✓ Test 3a: Search filter accurately isolates "Glass Signal" (prj_01).
-✓ Test 3b: Track category filter accurately resolves 6 projects for trk_01.
-✓ Test 3c: Combined search and track filter resolves correctly.
-✓ Test 4: All 41 project titles confirmed pre-rendered in .next/server/app/projects.html (run.py T1 checks PASS).
+[TEST-JUDGE-CONSOLE] Running Judge Speed Console verification suite...
+✓ Test 1: All 4 Judge Console components and routes exist with valid content.
+✓ Test 2a: Standard score formula verified: (0.4*4 + 0.35*3 + 0.25*2) = 3.15.
+✓ Test 2b: Maximum score ceiling verified: 5.00.
+✓ Test 2c: Minimum score floor verified: 1.00.
+✓ Test 2d: Intermediate score verified: 3.85.
+✓ Test 3: 41-project review navigation indices verified sequentially.
 ======================================================================
-[TEST-GALLERY-UI] ALL BENTO-GRID GALLERY UI CHECKS PASSED.
+[TEST-JUDGE-CONSOLE] ALL JUDGE CONSOLE VERIFICATIONS PASSED.
 ======================================================================
 ```
-❌ If errors: Inspect `scripts/test-gallery-ui.mjs` and components.
+❌ If errors: Inspect `scripts/test-judge-console.mjs` and components.
 
 Test 4 — Next.js Standalone Build & Route Verification:
 ```
 npm run build
 ```
-✅ Expected: Build succeeds and lists `○ /projects (3.35 kB)`.
+✅ Expected: Build succeeds and lists `ƒ /judge` and `ƒ /judge/review/[projectId]`.
 ❌ If wrong: Review compiler output in terminal.
 
 Test 5 — Security Check:
@@ -103,11 +106,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 10A: Premium Bento-Grid Gallery — components/BentoGrid.tsx & SearchBar.tsx"
+git commit -m "Step 10B: Judge Split-Screen Speed Console — app/judge/review/[projectId]/page.tsx"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 10B until:
+✋ DO NOT proceed to Step 10C until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully

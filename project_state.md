@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 10A: Premium Bento-Grid Gallery (T1 Frontend - app/projects/page.tsx, components/BentoGrid.tsx, components/ProjectCard.tsx)
+- **Last Completed Step:** Step 10B: Judge Split-Screen Speed Console (T2 Frontend - app/judge/review/[projectId]/page.tsx, components/RubricSlider.tsx)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -25,5 +25,8 @@
   - Role-isolated judging Route Handler (`app/api/judge/scores/route.ts`) enforcing FIG. 02 Matrix (401 unauthenticated, 403 participant, 403 peer score probe, 200 own score access, and 200 organizer inspection) plus ballot submission (`POST /api/judge/scores`)
   - High-throughput streaming CSV export Route Handler (`app/api/export.csv/route.ts`) with RFC 4180 compliance, organizer/admin authorization, and audit logging
   - Statistical Z-Score Normalization Engine (`lib/normalization.ts`) computing damped standardization, 1–5 scale calibration, and rank deltas
-- **Pending Next Step:** Step 10B: Judge Split-Screen Speed Console (T2 Frontend - app/judge/review/[projectId]/page.tsx, components/RubricSlider.tsx)
+  - Judge Split-Screen Speed Console (`app/judge/review/[projectId]/page.tsx` & `components/JudgeReviewConsole.tsx`) with real-time weighted scoring ($S_{ij} = 0.40 \cdot \text{func} + 0.35 \cdot \text{qual} + 0.25 \cdot \text{innov}$), keyboard navigation shortcuts, and ballot persistence via `POST /api/judge/scores`
+  - Interactive criterion slider component (`components/RubricSlider.tsx`) with scale presets and weight indicators
+  - Judge Portal Dashboard Hub (`app/judge/page.tsx`) tracking assigned project completion and review queue
+- **Pending Next Step:** Step 10C: Organizer Mission Control Dashboard (T2 Frontend - app/organizer/dashboard/page.tsx, components/CircularRing.tsx, components/JudgeStatusMatrix.tsx, components/NormalizedLeaderboard.tsx, components/CalibrationSummaryCard.tsx, components/RankDeltaBadge.tsx)
 - **Known Issues / Blockers:** None.
