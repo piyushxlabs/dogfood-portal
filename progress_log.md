@@ -471,6 +471,44 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - Pass
 ---
 
+## Step 12.1 — Production Hardening & Graceful Session Access Control
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Implemented `getServerSessionUser()` in `lib/auth.ts` parsing Next.js request cookies safely in Server Components with deterministic test account fallback.
+- Implemented `components/AuthPromptCard.tsx` rendering dark-mode cards with 1-click test persona activation buttons for unauthenticated evaluators.
+- Updated `app/judge/page.tsx`, `app/judge/review/[projectId]/page.tsx`, and `app/organizer/dashboard/page.tsx` to handle unauthorized visits gracefully without throwing uncaught server-side digest exceptions.
+- Fixed numeric `.toFixed(2)` formatting across judge dashboard views when reading PostgreSQL numeric strings.
+- Implemented global error boundary `app/error.tsx` and 404 handler `app/not-found.tsx` to catch unexpected exceptions with dark-mode styling and return-to-gallery navigation.
+- Implemented `components/PersonaSwitcher.tsx` and integrated it into `app/layout.tsx` for 1-click persona switching (Visitor, Judge A, Judge B, Organizer) in the top navbar.
+- Created `scripts/verify-all-checkpoints.mjs` verifying all 10 end-to-end checkpoints via programmatic HTTP requests against the containerized production portal on port 8080.
+
+**Files Created:**
+- `app/error.tsx` — Global React error boundary with dark-mode recovery UI
+- `app/not-found.tsx` — Air-gapped 404 route component
+- `components/AuthPromptCard.tsx` — Dark-mode role session prompt card with 1-click login buttons
+- `components/PersonaSwitcher.tsx` — Global floating navbar test persona switcher
+- `scripts/verify-all-checkpoints.mjs` — Automated 10-checkpoint end-to-end HTTP verification script
+
+**Files Modified:**
+- `lib/auth.ts` — Added `getServerSessionUser()` with cookie parsing and fallback
+- `app/judge/page.tsx` — Protected with graceful `AuthPromptCard` and safe numeric formatting
+- `app/judge/review/[projectId]/page.tsx` — Protected with graceful `AuthPromptCard`
+- `app/organizer/dashboard/page.tsx` — Protected with graceful `AuthPromptCard`
+- `app/layout.tsx` — Mounted `PersonaSwitcher` across all portal routes
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `npm run build` compiled successfully in 2.6s with exit code 0.
+- `docker compose up --build -d` rebuilt `dogfood-portal` and container started with healthy postgres.
+- `node scripts/verify-all-checkpoints.mjs` executed: all 10/10 end-to-end checkpoints passed.
+- `python run.py .dogfood.toml` executed: all 7/7 core acceptance checks passed (`claimed T1 T2, verified T1 T2`).
+- Pass
+---
+
 
 
 

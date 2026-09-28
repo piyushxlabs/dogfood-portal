@@ -1,98 +1,84 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 12 COMPLETION CHECKLIST
-# Acceptance Checker Verification & Receipt Commit (Phase 5)
+# STEP 12.1 COMPLETION CHECKLIST
+# Production Hardening & Graceful Session Access Control
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify the official acceptance report contains 7/7 PASS assertions:
+[ ] Run the comprehensive 10-checkpoint HTTP verification script:
     ```
-    type acceptance-report.txt
+    node scripts/verify-all-checkpoints.mjs
     ```
-    Expected output:
-      `DOGFOOD 2026 acceptance report`
-      `portal: http://localhost:8080`
-      `claimed: T1 T2`
-      `fixtures: fixtures.json`
-      `T1  gallery is public ................. PASS`
-      `T1  project from fixtures shown ....... PASS`
-      `T1  closed event refuses submissions .. PASS`
-      `T2  judge sees own scores ............. PASS`
-      `T2  judge cannot see peer scores ...... PASS`
-      `T2  participant blocked ............... PASS`
-      `T2  csv export works .................. PASS`
-      `claimed T1 T2, verified T1 T2`
+    Expected: `[VERIFY-ALL] ALL 10/10 END-TO-END CHECKPOINTS PASSED SUCCESSFULLY!`
 
-[ ] Confirm the containerized services are healthy and running:
+[ ] Verify the official acceptance test suite passes 100%:
     ```
-    docker compose ps
+    python run.py .dogfood.toml
     ```
-    Expected: `dogfood-db` (healthy) and `dogfood-portal` (Up, 8080->8080).
+    Expected: `claimed T1 T2, verified T1 T2` with exit code 0.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Verify re-running the acceptance checker produces 100% PASS:
-    ```
-    python run.py .dogfood.toml
-    ```
-    Expected: Exit code 0, all 7 checks evaluate to PASS.
+[ ] Open http://localhost:8080/judge in your browser without cookies:
+    Expected: Clean dark-mode "Judge Session Required" card with 1-click test login buttons (`Judge A`, `Judge B`, `Organizer`). No Next.js digest error.
 
-[ ] Verify Git working tree tracks all new container and report artifacts:
-    ```
-    git status
-    ```
-    Expected: `Dockerfile`, `docker-compose.yml`, `.dockerignore`, `public/.gitkeep`, `acceptance-report.txt`, and progress files show as tracked/staged.
+[ ] Open http://localhost:8080/organizer/dashboard in your browser without cookies:
+    Expected: Clean dark-mode "Organizer Session Required" card with 1-click `Activate Organizer Session (org_7f2a)` button.
+
+[ ] Test the floating Persona Switcher in the top right of the navbar:
+    Expected: Click any persona (`Visitor`, `Judge A`, `Judge B`, `Organizer`) to instantly switch active session cookie and reload the page.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `Dockerfile` — Multi-stage standalone Node 20 Alpine container with non-root user `nextjs`, port 8080, and pre-packaged database driver.
-[ ] File: `docker-compose.yml` — Multi-container topology linking PostgreSQL 16 Alpine and Next.js portal on `http://localhost:8080`.
-[ ] File: `.dockerignore` — Build context exclusion manifest keeping images small (< 500MB).
-[ ] File: `public/.gitkeep` — Directory placeholder for static assets.
-[ ] File: `acceptance-report.txt` — Authoritative verification receipt proving 100% compliance across claimed tiers T1 and T2.
-[ ] Feature: Single-Command Air-Gapped Deployment — `docker compose up -d` boots healthy database, runs migrations, seeds fixtures, and serves portal in under 1 second.
-[ ] Feature: 100% Acceptance Verification — All 7 assertions verified on live containerized endpoint.
+[ ] File: `components/AuthPromptCard.tsx` — Dark-mode session prompt card with 1-click test login buttons
+[ ] File: `components/PersonaSwitcher.tsx` — Global floating navbar badge for 1-click test persona switching
+[ ] File: `app/error.tsx` — Global React error boundary with dark-mode recovery UI and "Return to Gallery" action
+[ ] File: `app/not-found.tsx` — Air-gapped 404 page with return-to-gallery navigation
+[ ] File: `scripts/verify-all-checkpoints.mjs` — Programmatic 10-checkpoint test suite validating all user flows
+[ ] Feature: Defensive numeric formatting — Fixed PostgreSQL decimal string conversion before `.toFixed(2)` in `app/judge/page.tsx`
+[ ] Feature: Server Session Helper — `getServerSessionUser()` in `lib/auth.ts` for safe cookie resolution in Server Components
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Test 1 — Container Status:
+Test 1 — Files Exist:
 ```
-docker compose ps
+dir /b app\error.tsx app\not-found.tsx components\AuthPromptCard.tsx components\PersonaSwitcher.tsx scripts\verify-all-checkpoints.mjs
 ```
-✅ Expected: Both `dogfood-db` and `dogfood-portal` are running.
-❌ If stopped: Run `docker compose logs` to inspect error output.
+✅ Expected: All 5 files are listed.
+❌ If missing: Check repository root and restore from git.
 
-Test 2 — Acceptance Report Content:
+Test 2 — Full Checkpoint Verification:
 ```
-type acceptance-report.txt
+node scripts/verify-all-checkpoints.mjs
 ```
-✅ Expected: Shows `claimed T1 T2, verified T1 T2` with zero FAIL lines.
-❌ If fails: Check `run.py` output against `.dogfood.toml` routes.
+✅ Expected: 10/10 checkpoints PASS.
+❌ If errors: Verify container is listening on port 8080 via `docker compose ps`.
 
-Test 3 — Live Endpoint Health:
+Test 3 — Official Acceptance Checker:
 ```
 python run.py .dogfood.toml
 ```
-✅ Expected: Exit code 0 with 7/7 PASS.
+✅ Expected: `claimed T1 T2, verified T1 T2`
+❌ If errors: Check `.dogfood.toml` routes and database seeding.
 
-Test 4 — Container Image Footprint:
+Test 4 — Next.js Local Build Check:
 ```
-docker image ls dogfood-web
+npm run build
 ```
-✅ Expected: Disk usage under 500 MB (verified at ~280 MB).
+✅ Expected: Compiled successfully with zero TypeScript or lint errors.
 
 Test 5 — Security Check:
 [ ] Verify .env is in .gitignore:
     ```
     type .gitignore | findstr .env
     ```
-    ✅ Expected: `.env*` or `.env.local` appears in the output.
-    ❌ If missing: Add `.env` to `.gitignore` immediately.
+    ✅ Expected: `.env` appears in the output.
+    ❌ If missing: Add `.env` to .gitignore immediately.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 GIT COMMIT
@@ -101,7 +87,7 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 12: Acceptance Checker Verification & Receipt Commit — claimed T1 T2, verified T1 T2"
+git commit -m "Step 12.1: Production Hardening — graceful session cards, persona switcher, error boundary, and full checkpoint suite"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

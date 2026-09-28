@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { PersonaSwitcher } from "@/components/PersonaSwitcher";
 
 export const metadata: Metadata = {
   title: "Dogfood 2026 Hackathon Portal",
@@ -13,7 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-zinc-950 text-zinc-100 antialiased selection:bg-zinc-800 selection:text-zinc-100">
+      <body className="bg-zinc-950 text-zinc-100 antialiased selection:bg-zinc-800 selection:text-zinc-100 min-h-screen">
+        {/* Evaluator Persona Switcher */}
+        <div className="fixed top-3 right-4 z-50">
+          <PersonaSwitcher />
+        </div>
         {children}
       </body>
     </html>

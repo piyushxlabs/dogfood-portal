@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 12: Acceptance Checker Verification & Receipt Commit (Phase 5 - acceptance-report.txt)
+- **Last Completed Step:** Step 12.1: Production Hardening & Graceful Session Access Control
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -38,5 +38,10 @@
   - Multi-Stage Standalone Docker Container (`Dockerfile`) compiling Next.js 15 standalone application, static assets, and pre-packaged database driver into an optimized 280MB container (< 500MB budget)
   - Isolated Docker Compose Topology (`docker-compose.yml`) linking healthy PostgreSQL 16 Alpine container with Next.js web portal on `http://localhost:8080`, executing automatic idempotent DDL migration and fixtures seeding on cold boot
   - Clean Acceptance Report Receipt (`acceptance-report.txt`) verifying all 7/7 core assertions across claimed tiers T1 and T2 (`claimed T1 T2, verified T1 T2`) with zero test failures
+  - Graceful Session Prompt Cards (`components/AuthPromptCard.tsx`) on `/judge`, `/judge/review/...`, and `/organizer/dashboard` for unauthenticated evaluators with 1-click test credential activation
+  - Global Client Error Boundary (`app/error.tsx`) and Dark-Mode 404 Route (`app/not-found.tsx`) preventing raw Next.js digest error screens
+  - Universal Test Persona Switcher (`components/PersonaSwitcher.tsx`) mounted in root layout navbar for seamless evaluator inspection between Visitor, Judge A, Judge B, and Organizer
+  - Comprehensive End-to-End HTTP Checkpoint Test Suite (`scripts/verify-all-checkpoints.mjs`) verifying all 10 checkpoints on the live containerized portal
 - **Pending Next Step:** Step 13: Final Submission Verification & Headless Demo Video Recording (Phase 6)
 - **Known Issues / Blockers:** None.
+

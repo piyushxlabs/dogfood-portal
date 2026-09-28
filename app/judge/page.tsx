@@ -7,6 +7,8 @@ import Link from 'next/link';
 import sql from '@/lib/db';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { getServerSessionUser } from '@/lib/auth';
+import { AuthPromptCard } from '@/components/AuthPromptCard';
 import {
   Trophy,
   ShieldCheck,
@@ -29,9 +31,7 @@ interface JudgeProjectItem {
   total_weighted_score?: number;
 }
 
-async function getJudgeDashboardData(): Promise<JudgeProjectItem[]> {
-  const currentJudgeId = 'jdg_01'; // Default test judge_a
-
+async function getJudgeDashboardData(currentJudgeId: string): Promise<JudgeProjectItem[]> {
   try {
     const projects = await sql<
       {
@@ -67,7 +67,7 @@ async function getJudgeDashboardData(): Promise<JudgeProjectItem[]> {
         track_name: p.track_name,
         team_name: p.team_name,
         has_score: p.score_id !== null,
-        total_weighted_score: p.total_weighted_score ?? undefined,
+        total_weighted_score: p.total_weighted_score != null ? Number(p.total_weighted_score) : undefined,
       }));
     }
   } catch (err) {
@@ -101,7 +101,27 @@ async function getJudgeDashboardData(): Promise<JudgeProjectItem[]> {
 }
 
 export default async function JudgeHubPage() {
-  const projects = await getJudgeDashboardData();
+  const user = await getServerSessionUser();
+
+  // If user is not authenticated or role is not judge/organizer/admin, render clean AuthPromptCard
+  if (
+    !user.isAuthenticated ||
+    (user.role !== 'judge' && user.role !== 'organizer' && user.role !== 'admin')
+  ) {
+    return (
+      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-4">
+        <AuthPromptCard
+          requiredRole="judge"
+          title="Judge Session Required"
+          description="Access to the Judge Speed Console and ballot review queue requires authenticated judge credentials."
+          currentRole={user.role}
+        />
+      </main>
+    );
+  }
+
+  const judgeId = user.userId || 'jdg_01';
+  const projects = await getJudgeDashboardData(judgeId);
   const completedCount = projects.filter((p) => p.has_score).length;
   const pendingCount = projects.length - completedCount;
 
@@ -116,7 +136,7 @@ export default async function JudgeHubPage() {
             </div>
             <div>
               <span className="font-bold text-sm text-zinc-100 tracking-tight block">Judge Portal Hub</span>
-              <span className="text-[11px] text-zinc-500 font-mono block">Logged in as Judge A (jdg_01)</span>
+              <span className="text-[11px] text-zinc-500 font-mono block">Logged in as {judgeId}</span>
             </div>
           </div>
 
@@ -181,7 +201,7 @@ export default async function JudgeHubPage() {
                   {project.has_score ? (
                     <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      Reviewed {project.total_weighted_score ? `(${project.total_weighted_score.toFixed(2)})` : ''}
+                      Reviewed {project.total_weighted_score != null ? `(${Number(project.total_weighted_score).toFixed(2)})` : ''}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-400">

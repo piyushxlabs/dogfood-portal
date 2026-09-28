@@ -7,6 +7,8 @@ import { notFound } from 'next/navigation';
 import sql from '@/lib/db';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { getServerSessionUser } from '@/lib/auth';
+import { AuthPromptCard } from '@/components/AuthPromptCard';
 import {
   JudgeReviewConsole,
   type ProjectDetail,
@@ -186,6 +188,25 @@ async function getProjectReviewData(projectId: string): Promise<{
 }
 
 export default async function JudgeReviewPage({ params }: PageProps) {
+  const user = await getServerSessionUser();
+
+  // If user is not authenticated or role is not judge/organizer/admin, render clean AuthPromptCard
+  if (
+    !user.isAuthenticated ||
+    (user.role !== 'judge' && user.role !== 'organizer' && user.role !== 'admin')
+  ) {
+    return (
+      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-4">
+        <AuthPromptCard
+          requiredRole="judge"
+          title="Judge Session Required"
+          description="Submitting and editing evaluation ballots requires an active judge session."
+          currentRole={user.role}
+        />
+      </main>
+    );
+  }
+
   const { projectId } = await params;
   const { project, projectIds, initialScore } = await getProjectReviewData(projectId);
 

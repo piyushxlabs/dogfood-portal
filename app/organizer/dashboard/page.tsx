@@ -13,6 +13,8 @@ import {
   type LeaderboardRow,
   type VarianceSummary,
 } from '@/lib/normalization';
+import { getServerSessionUser } from '@/lib/auth';
+import { AuthPromptCard } from '@/components/AuthPromptCard';
 import { CalibrationSummaryCard } from '@/components/CalibrationSummaryCard';
 import { CircularRing } from '@/components/CircularRing';
 import { JudgeStatusMatrix, type JudgeStatusItem } from '@/components/JudgeStatusMatrix';
@@ -182,6 +184,22 @@ async function getDashboardOperationalData(): Promise<{
 }
 
 export default async function OrganizerDashboardPage() {
+  const user = await getServerSessionUser();
+
+  // If user is not authenticated or role is not organizer/admin, render clean AuthPromptCard
+  if (!user.isAuthenticated || (user.role !== 'organizer' && user.role !== 'admin')) {
+    return (
+      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-4">
+        <AuthPromptCard
+          requiredRole="organizer"
+          title="Organizer Session Required"
+          description="The Mission Control Dashboard contains confidential cross-judge calibration metrics, operational velocity indicators, and export functions restricted to organizers."
+          currentRole={user.role}
+        />
+      </main>
+    );
+  }
+
   const [leaderboard, variance, operational] = await Promise.all([
     getNormalizedLeaderboard(),
     getVarianceSummary(),
