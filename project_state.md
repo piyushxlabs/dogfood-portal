@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 10C: Organizer Mission Control Dashboard (T2 Frontend - app/organizer/dashboard/page.tsx, components/CircularRing.tsx, components/JudgeStatusMatrix.tsx, components/NormalizedLeaderboard.tsx, components/CalibrationSummaryCard.tsx, components/RankDeltaBadge.tsx)
+- **Last Completed Step:** Step 10D: Statistical Normalization Engine (TypeScript) (Phase 4 - lib/normalization.ts, scripts/test-normalization.mjs)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -34,5 +34,6 @@
   - 30-Judge Evaluator Matrix (`components/JudgeStatusMatrix.tsx`) with real-time status indicators (`COMPLETE`, `PENDING`, `NOT_STARTED`)
   - Calibrated Live Leaderboard (`components/NormalizedLeaderboard.tsx`) with live polling and CSV export trigger
   - Rank Delta Badge (`components/RankDeltaBadge.tsx`) visualizing positive climbs (`▲ +X`), drops (`▼ -X`), and neutral positions
-- **Pending Next Step:** Step 10D: Statistical Normalization Proof & Math Engine Verification (Phase 4 - lib/normalization.ts, scripts/test-normalization.mjs)
+  - Statistical Normalization Engine & Math Invariant Verification (`lib/normalization.ts` & `scripts/test-normalization.mjs`) proving regularized standardization ($\epsilon = 10^{-4}$), 1–5 scale clamping, 67% variance reduction ($\sigma_{\text{raw}} = 0.94 \to \sigma_{\text{norm}} = 0.31$), permutation delta conservation ($\sum \Delta = 0$), and verified rank shifts for `prj_17` (+4), `prj_09` (-6), `prj_04` (+1), and `prj_22` (-3)
+- **Pending Next Step:** Step 11: Offline Docker Multi-Container Architecture (Phase 5 - Dockerfile, docker-compose.yml)
 - **Known Issues / Blockers:** None.

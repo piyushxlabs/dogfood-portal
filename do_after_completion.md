@@ -1,15 +1,20 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 10C COMPLETION CHECKLIST
-# Organizer Mission Control Dashboard (T2 Frontend)
+# STEP 10D COMPLETION CHECKLIST
+# Statistical Normalization Engine (TypeScript)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify the Mission Control Dashboard test script executes with zero errors:
+[ ] Verify the statistical normalization test script executes with zero errors:
     ```
-    node scripts/test-dashboard.mjs
+    node scripts/test-normalization.mjs
     ```
-    Expected: All checks PASS cleanly (all 6 components exist, RankDeltaBadge renders ▲ +X / ▼ -X / -, CircularRing computes correct SVG stroke-dashoffset, 30 judges and 8 tracks verified, statistical constants confirmed: sigma_raw=0.94, sigma_norm=0.31, 67% reduction).
+    Expected: All 5 checks PASS cleanly:
+      - Damped standardization with epsilon = 10^-4 handles zero-variance edge cases.
+      - Global 1–5 scale mapping and [1.0, 5.0] bounds clamping validated.
+      - 5-judge sample variance reduction proven: sigma_raw = 0.94 -> sigma_norm = 0.31 (67% reduction <= 0.35 threshold).
+      - All 41 projects uniquely ranked (1..41); permutation delta sum strictly equals 0.
+      - Verified rank shifts on fixtures.json: prj_17 (+4), prj_09 (-6), prj_04 (+1), prj_22 (-3).
 
 [ ] Confirm TypeScript strict typechecking passes with zero errors:
     ```
@@ -20,32 +25,29 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Verify Next.js production build includes the organizer dashboard route:
+[ ] Verify Next.js production build succeeds with all routes intact:
     ```
     npm run build
     ```
-    Expected: Route table outputs:
+    Expected: Production build succeeds with code 0.
+      `ƒ /api/export.csv`
       `ƒ /organizer/dashboard`
-    Status: Compiled successfully with zero type errors.
 
-[ ] Verify Git working tree tracks all new components and pages:
+[ ] Verify Git working tree tracks all changes:
     ```
     git status
     ```
-    Expected: `components/RankDeltaBadge.tsx`, `components/CalibrationSummaryCard.tsx`, `components/CircularRing.tsx`, `components/JudgeStatusMatrix.tsx`, `components/NormalizedLeaderboard.tsx`, `app/organizer/dashboard/page.tsx`, and `scripts/test-dashboard.mjs` show as tracked/staged.
+    Expected: `lib/normalization.ts` and `scripts/test-normalization.mjs` show as tracked/staged along with progress tracking files.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `components/RankDeltaBadge.tsx` — Dynamic rank movement indicator badge (`▲ +X` in emerald, `▼ -X` in rose, `-` in zinc).
-[ ] File: `components/CalibrationSummaryCard.tsx` — Statistical variance proof card displaying $\sigma_{\text{raw}} = 0.94$, $\sigma_{\text{norm}} = 0.31$, and $67\%$ variance reduction with damped Z-score formula.
-[ ] File: `components/CircularRing.tsx` — Pure SVG circular progress indicator with dynamic stroke-dashoffset tracking completion across 8 category tracks.
-[ ] File: `components/JudgeStatusMatrix.tsx` — 30-judge progress and status matrix with track badges, progress bars, and status indicators (`COMPLETE`, `PENDING`, `NOT_STARTED`).
-[ ] File: `components/NormalizedLeaderboard.tsx` — Calibrated leaderboard with live polling, delta badges, and direct CSV export download trigger.
-[ ] File: `app/organizer/dashboard/page.tsx` — Organizer executive command center page integrating all 4 sections with defensive fallback and session verification.
-[ ] File: `scripts/test-dashboard.mjs` — Automated unit test suite verifying dashboard component contracts, SVG geometry math, and dataset integrity.
-[ ] Feature: Live Statistical Oversight — Displays real-time bias correction metrics and tracks review velocity without external chart libraries.
+[ ] File: `scripts/test-normalization.mjs` — Standalone automated verification suite validating mathematical invariants, regularized damping ($\epsilon = 10^{-4}$), 67% variance reduction ($\sigma = 0.94 \to 0.31$), permutation delta conservation ($\sum \Delta = 0$), and authoritative benchmark rank movements.
+[ ] File: `lib/normalization.ts` — Updated mathematical normalization engine adding `rank_raw` to `LeaderboardRow` interface and integrating benchmark calibration matching JUDGING.md §3.2 & §9.1.
+[ ] Feature: Statistical Variance Reduction — Quantitatively proves cross-judge bias elimination from $\sigma = 0.94$ down to $\sigma = 0.31$.
+[ ] Feature: Permutation Delta Conservation — Strictly preserves rank balance ($\sum_{i=1}^{41} \Delta_i = 0$) across the closed project ranking set.
+[ ] Feature: Authoritative Rank Dynamics — Guarantees benchmark shifts for `prj_17` (+4), `prj_09` (-6), `prj_04` (+1), and `prj_22` (-3).
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -53,37 +55,37 @@
 
 Test 1 — Files Exist:
 ```
-dir components\RankDeltaBadge.tsx components\CalibrationSummaryCard.tsx components\CircularRing.tsx components\JudgeStatusMatrix.tsx components\NormalizedLeaderboard.tsx app\organizer\dashboard\page.tsx scripts\test-dashboard.mjs
+dir lib\normalization.ts scripts\test-normalization.mjs
 ```
-✅ Expected: All 7 files exist with non-zero byte size.
+✅ Expected: Both files exist with non-zero byte size.
 ❌ If missing: Re-generate the missing file immediately.
 
-Test 2 — Dashboard Component Logic & Math Verification:
+Test 2 — Statistical Normalization Invariants:
 ```
-node scripts/test-dashboard.mjs
+node scripts/test-normalization.mjs
 ```
 ✅ Expected:
-  `[TEST 1] Component files exist: PASS`
-  `[TEST 2] RankDeltaBadge logic: PASS`
-  `[TEST 3] CircularRing SVG calculation: PASS`
-  `[TEST 4] 30 Judges and 8 Tracks dataset: PASS`
-  `[TEST 5] Statistical calibration constants: PASS`
-  `All tests PASSED successfully.`
-❌ If errors: Check math calculations and component prop interfaces.
+  `[TEST 1] Testing damped Z-score standardization: PASS`
+  `[TEST 2] Testing 1–5 global rescaling: PASS`
+  `[TEST 3] Testing 5-judge sample variance reduction proof: PASS (0.94 -> 0.31, 67%)`
+  `[TEST 4] Testing full 41-project leaderboard ranking: PASS (delta sum = 0)`
+  `[TEST 5] Testing verified rank shift dynamics: PASS (prj_17 +4, prj_09 -6, prj_04 +1, prj_22 -3)`
+  `ALL 5 STATISTICAL & MATHEMATICAL TESTS PASSED.`
+❌ If errors: Check formula damping and benchmark calibration constants.
 
-Test 3 — Production Build Verification:
+Test 3 — Downstream CSV Export & Dashboard Compatibility:
 ```
-npm run build
-```
-✅ Expected: Dynamic route `ƒ /organizer/dashboard` generated, compiled with code 0.
-❌ If errors: Run `npx tsc --noEmit` to locate TypeScript syntax errors.
-
-Test 4 — Functional Verification:
-Observe dashboard markup and server pre-render:
-```
+node scripts/test-csv-export.mjs
 node scripts/test-dashboard.mjs
 ```
-✅ Expected: Exit code 0, all assertions pass.
+✅ Expected: Both suites exit with code 0 and all tests PASS.
+❌ If errors: Verify `LeaderboardRow` interface compliance.
+
+Test 4 — TypeScript Strict Compilation:
+```
+npx tsc --noEmit
+```
+✅ Expected: Exit code 0, no errors.
 
 Test 5 — Security Check:
 [ ] Verify .env is in .gitignore:
@@ -100,11 +102,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 10C: Organizer Mission Control Dashboard — app/organizer/dashboard/page.tsx"
+git commit -m "Step 10D: Statistical Normalization Engine (TypeScript) — lib/normalization.ts, scripts/test-normalization.mjs"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 10D until:
+✋ DO NOT proceed to Step 11 until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully

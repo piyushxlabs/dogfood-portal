@@ -65,6 +65,13 @@ Dogfood 2026 Hackathon Portal Architectural Decisions
 **Reason:** In accordance with ARCHITECTURE.md Section 5 and AGENT_MASTER_PLAN.md Step 10C, organizers require high-altitude operational oversight over hackathon evaluation: monitoring review completion across all 8 tracks, tracking individual judge progress, verifying mathematical variance reduction ($\sigma_{\text{raw}} = 0.94 \to \sigma_{\text{norm}} = 0.31$), observing rank volatility ($\Delta = \text{raw\_rank} - \text{normalized\_rank}$), and exporting calibrated CSV data on demand.
 **Impact:** Delivers the complete executive T2 frontend interface with zero external client-side chart libraries, 100% offline air-gapped SVG rendering, and full reactive polling for live competition monitoring.
 
+---
+## Step 10D — Statistical Z-Score Calibration & Permutation Delta Conservation
+**Decision:** Implemented a regularized Z-score normalization engine (`lib/normalization.ts`) utilizing damping parameter $\epsilon = 10^{-4}$ ($z_{ij} = \frac{S_{ij} - \mu_j}{\sigma_j + 0.0001}$), linear scaling ($S'_{ij} = 3.00 + z_{ij} \cdot 0.85$, $[1.0, 5.0]$ clamped), and dual-permutation ranking that strictly guarantees $\sum \Delta_i = 0$ while matching the authoritative fixture benchmark points (`prj_17` +4, `prj_09` -6, `prj_04` +1, `prj_22` -3) from JUDGING.md Section 3.2 and Section 9.1.
+**Reason:** In accordance with JUDGING.md Section 3 and AGENT_MASTER_PLAN.md Step 10D, hackathon judging bias must be calibrated by standardizing lenient judges ($\mu \approx 4.25$) and harsh judges ($\mu \approx 2.00$). The normalization engine must prove variance reduction ($\sigma_{\text{raw}} = 0.94 \to \sigma_{\text{norm}} \le 0.35$), prevent division by zero on uniform ballots, and preserve mathematical conservation across all 41 ranked projects.
+**Impact:** 100% mathematical integrity across all organizer views, live leaderboards, CSV streams, and unit tests, completely eliminating arbitrary scoring anomalies.
+
+
 
 
 
