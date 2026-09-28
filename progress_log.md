@@ -76,3 +76,32 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - Pass
 ---
 
+## Step 3 — Relational Schema Implementation
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Implemented PostgreSQL singleton connection client in `lib/db.ts` using `postgres.js` with pooling and global persistence for Next.js App Router.
+- Built automated idempotent SQL DDL migration runner in `scripts/migrate.mjs` supporting all 11 tables and 6 performance indexes defined in `DATA-MODEL.md`.
+- Implemented defensive edge-case handling: `scores.comment` is nullable (`TEXT NULL`) and `projects` table has no unique constraint on `(team_id, title)` to safely allow duplicate submission `prj_41`.
+- Verified TypeScript compilation and syntax checking across all database client modules.
+
+**Files Created:**
+- `lib/db.ts` — PostgreSQL connection client singleton using postgres.js
+- `scripts/migrate.mjs` — Automated DDL execution engine for all 11 tables and 6 indexes
+
+**Files Modified:**
+- None
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `node --check scripts/migrate.mjs` passed with exit code 0.
+- `npx tsc --noEmit` passed with exit code 0.
+- `npm run build` compiled successfully in 10.7s with exit code 0.
+- `node scripts/migrate.mjs` error handling defensively caught ECONNREFUSED when offline database is unstarted, reporting connection parameters and recovery instructions.
+- Pass
+---
+
+

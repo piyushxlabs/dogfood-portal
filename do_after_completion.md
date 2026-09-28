@@ -1,45 +1,44 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 2 COMPLETION CHECKLIST
-# Acceptance Configuration Baseline
+# STEP 3 COMPLETION CHECKLIST
+# Relational Schema Implementation
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify .dogfood.toml content at repository root:
+[ ] Verify existence of database client and migration script:
     ```
-    cat .dogfood.toml
+    ls -la lib/db.ts scripts/migrate.mjs
     ```
-    Expected: claimed = ["T1", "T2"] and all 5 routes defined.
+    Expected: Both files exist.
 
-[ ] Confirm fixtures.json and run.py are present at repository root:
+[ ] Verify syntax of migration script:
     ```
-    ls -la .dogfood.toml fixtures.json run.py
+    node --check scripts/migrate.mjs
     ```
-    Expected: All three files exist at the project root.
+    Expected: No syntax errors (clean exit code 0).
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Test config loading with run.py parser:
+[ ] Run TypeScript check across project:
     ```
-    python -c "import run; cfg = run.load_config('.dogfood.toml'); print('Claimed:', cfg['tiers']['claimed'])"
+    npx tsc --noEmit
     ```
-    Expected: Claimed: ['T1', 'T2']
+    Expected: 0 errors.
 
-[ ] Test fixture loading with run.py loader:
+[ ] Run production build verification:
     ```
-    python -c "import run; f, p = run.load_fixture(None, '.dogfood.toml'); print('Loaded', len(f['projects']), 'projects from', p)"
+    npm run build
     ```
-    Expected: Loaded 41 projects from fixtures.json
+    Expected: "Compiled successfully" with 0 errors.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `.dogfood.toml` — Acceptance test config mapping base_url, claimed tiers, auth headers, and routes
-[ ] File: `fixtures.json` — Root-level synthetic dataset with 41 projects, 30 judges, 40 teams, and scores
-[ ] File: `run.py` — Official automated acceptance test suite from Hackathon Raptors
-[ ] Feature: Baseline Acceptance Configuration — 100% compliant with run.py syntax and validation harness
+[ ] File: `lib/db.ts` — PostgreSQL connection client singleton using postgres.js with pooling and App Router hot-reload persistence
+[ ] File: `scripts/migrate.mjs` — Automated DDL migration runner covering all 11 tables and 6 indexes idempotently
+[ ] Feature: Defensive relational schema accommodating duplicate `prj_41` and nullable comments (`scores.comment TEXT NULL`)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -47,26 +46,33 @@
 
 Test 1 — Files Exist:
 ```
-ls -la .dogfood.toml fixtures.json run.py
+ls -la lib/db.ts scripts/migrate.mjs
 ```
-✅ Expected: .dogfood.toml, fixtures.json, run.py present in root directory.
-❌ If missing: Copy from docs/ or re-create .dogfood.toml.
+✅ Expected: Both `lib/db.ts` and `scripts/migrate.mjs` appear.
+❌ If missing: Re-generate the missing file according to Step 3 specification.
 
-Test 2 — TOML Syntax & Route Integrity:
+Test 2 — Syntax & Compilation:
 ```
-python -c "import run; cfg = run.load_config('.dogfood.toml'); assert cfg['portal']['base_url'] == 'http://localhost:8080'; assert cfg['tiers']['claimed'] == ['T1', 'T2']; assert cfg['routes']['gallery'] == '/projects'; assert cfg['routes']['submit'] == '/projects/new'; assert cfg['routes']['judge_scores'] == '/api/judge/scores'; assert cfg['routes']['peer_scores'] == '/api/judge/scores?judge=judge_a'; assert cfg['routes']['csv_export'] == '/api/export.csv'; print('ALL ROUTES & CLAIMS VALID')"
+node --check scripts/migrate.mjs
+npx tsc --noEmit
 ```
-✅ Expected: "ALL ROUTES & CLAIMS VALID"
-❌ If errors: Check `.dogfood.toml` formatting.
+✅ Expected: Clean exit 0 for both checks.
+❌ If errors: Check TypeScript types in `src/types/db.ts` or syntax in `lib/db.ts`.
 
-Test 3 — Fixture Parsing:
+Test 3 — Build Verification:
 ```
-python -c "import json; data = json.load(open('fixtures.json')); print('Event:', data['event']['id']); print('Projects:', len(data['projects']))"
+npm run build
 ```
-✅ Expected: Event: evt_01, Projects: 41
-❌ If errors: Ensure `fixtures.json` is a valid copy of `docs/fixtures.json`.
+✅ Expected: Next.js standalone build passes cleanly.
+❌ If errors: Fix any import path issues.
 
-Test 4 — Security Check:
+Test 4 — Migration Script Resilience:
+```
+node scripts/migrate.mjs
+```
+✅ Expected: If database is running, all 11 tables created. If offline/unstarted, cleanly reports connection target and recovery instructions without unhandled crash.
+
+Test 5 — Security Check:
 [ ] Verify .env is in .gitignore
     ```
     Get-Content .gitignore | Select-String "\.env"
@@ -81,11 +87,11 @@ Test 4 — Security Check:
 
 ```
 git add .
-git commit -m "Step 2: Acceptance Configuration Baseline — .dogfood.toml, fixtures.json, run.py"
+git commit -m "Step 3: Relational Schema Implementation — lib/db.ts and scripts/migrate.mjs"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 3 until:
+✋ DO NOT proceed to Step 4 until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully

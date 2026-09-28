@@ -14,3 +14,10 @@ Dogfood 2026 Hackathon Portal Architectural Decisions
 **Impact:** `run.py` evaluates all 7 core assertions and reports `claimed T1 T2, verified T1 T2` deterministically.
 ---
 
+## Step 3 — Defensive DDL Design for Synthetic Edge Cases
+**Decision:** Defined primary key on `projects` strictly as `id` (omitting unique constraints on `team_id, title` or `team_id, repo_url`), and defined `scores.comment` as `TEXT NULL`.
+**Reason:** In `fixtures.json`, duplicate project `prj_41` shares identical team and title with `prj_07`, and multiple reviews feature empty string comments `""`. Imposing synthetic composite uniqueness or NOT NULL comment constraints would abort database seeding.
+**Impact:** Clean ingestion and idempotent DDL execution across all 11 tables and 6 indexes without unique constraint conflicts.
+---
+
+
