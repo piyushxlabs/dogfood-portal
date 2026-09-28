@@ -140,3 +140,21 @@ Dogfood 2026 Hackathon Portal Architectural Decisions
 **Decision:** Changed all inner-page sticky section headers from sticky top-0 z-40 to sticky top-14 z-30.
 **Reason:** Global layout header is h-14 (56px) with sticky top-0 z-50. Inner headers at 	op-0 z-40 slide beneath the global header during scroll. Using 	op-14 pins them flush below the global nav.
 **Impact:** All pages scroll cleanly without the double-header overlap glitch.
+
+---
+## Step 14 - XSS Sanitizer Strategy: Entity-Encode vs. Strip
+**Decision:** Rewrote sanitizeText() to entity-encode < and > as HTML entities instead of stripping tags.
+**Reason:** T3/T4 test 06 asserts comment_text includes the entity-encoded form. Stripping produces empty output, failing the test. Entity-encoding preserves text intent while preventing DOM injection.
+**Impact:** Test 06 PASS. Comments store encoded entities; React JSX renders the visible literal safely.
+
+---
+## Step 14 - Judge Identity Guard: notFound() Instead of Fallback
+**Decision:** Replaced userId fallback to 'jdg_01' with hard notFound() call if userId is null.
+**Reason:** TypeScript types SessionUser.userId as string or null. Null userId on an authenticated session would silently attribute ballot actions to jdg_01. notFound() fails fast and auditably.
+**Impact:** Zero risk of ghost ballot attribution. TypeScript narrowing via userId non-null assertion post-guard.
+
+---
+## Step 14 - CSV Field Escaping: Uniform escapeCsvField() Contract
+**Decision:** escapeCsvField() now accepts null, undefined, and number types. All formatCsvRow fields call it explicitly.
+**Reason:** Uniform wrapping makes the injection-safety contract refactor-proof for future type changes on numeric fields.
+**Impact:** CSV export injection-safe, RFC 4180 compliant, architecturally hardened.

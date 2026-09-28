@@ -638,10 +638,46 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - `python run.py .dogfood.toml`: claimed T1 T2, verified T1 T2 (7/7 PASS)
 - `node scripts/test-t3-t4.mjs`: 14/14 assertions passed (100%)
 - Docker rebuild in progress to push changes into container image
+
+
 ---
+## Step 14 — Final Production Hardening (Post-Audit Zero-Defect Patching)
+**Date:** 2026-09-28
+**Status:** Complete
 
+**What was implemented:**
+- CRITICAL-01: Replaced silent `|| 'jdg_01'` judge ID fallback with `notFound()` guard in both `app/judge/page.tsx` and `app/judge/review/[projectId]/page.tsx`. Added `user.userId!` non-null assertion post-guard for TypeScript correctness. Added `notFound` import to judge hub page.
+- CRITICAL-02: Wrapped `fs.readFile('docs/openapi.json')` in try/catch in `app/api-docs/page.tsx`. Returns a minimal valid stub spec on file read failure instead of crashing the page.
+- HIGH-01: Hardened `escapeCsvField()` in `app/api/export.csv/route.ts` to handle `null | undefined | number` types. Numbers bypass the injection-prefix guard (safe by type). All `formatCsvRow` fields now explicitly wrapped in `escapeCsvField()`, making the contract refactor-proof.
+- MEDIUM-01: Added sliding-window in-memory IP rate limiter to `app/api/projects/[id]/comments/route.ts`. Max 10 comments per IP per 10 minutes. Returns HTTP 429. Stale timestamps pruned on each check.
+- XSS Sanitizer Fix: Rewrote `sanitizeText()` to encode `<`/`>` as `&lt;`/`&gt;` entities (instead of stripping tags) so the T3/T4 test assertion `data.comment.comment_text.includes('&lt;script&gt;')` passes correctly.
+- UX-02: Replaced "Sample Hack 2026" with "Dogfood 2026" in judge review console header subtitle.
+- UX-04: `RankDeltaBadge` zero-delta case now renders clean `—` only (removed redundant `0`).
+- UX-Project-Detail: Added smart deduplication in `app/projects/[id]/page.tsx` — if `description === summary`, renders single "PROJECT OVERVIEW" block instead of stacked duplicates.
 
+**Files Created:**
+- None
 
+**Files Modified:**
+- `app/judge/page.tsx` — CRITICAL-01 notFound guard + notFound import
+- `app/judge/review/[projectId]/page.tsx` — CRITICAL-01 notFound guard + UX-02 branding fix
+- `app/api-docs/page.tsx` — CRITICAL-02 defensive try/catch on spec loader
+- `app/api/export.csv/route.ts` — HIGH-01 hardened escapeCsvField signature and explicit wrapping
+- `app/api/projects/[id]/comments/route.ts` — MEDIUM-01 rate limiter + XSS entity-encode sanitizer fix
+- `components/RankDeltaBadge.tsx` — UX-04 clean zero-delta badge (dash only)
+- `app/projects/[id]/page.tsx` — Smart summary/description deduplication
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `npx tsc --noEmit`: 0 errors — PASS
+- `npm run build`: ✓ Compiled successfully, 17/17 routes — PASS
+- `docker compose build web` + `docker compose up -d web`: Container rebuilt and restarted with new image — PASS
+- `python run.py .dogfood.toml`: claimed T1 T2, verified T1 T2 (7/7 PASS)
+- `node scripts/test-t3-t4.mjs`: 14/14 assertions passed (100%) — PASS
+- Git commit: `80acdd9` — Final Hardening
+---
 
 
 
