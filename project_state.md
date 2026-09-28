@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 5: Session Authentication Helper & Middleware (lib/auth.ts, middleware.ts)
+- **Last Completed Step:** Step 6: Public Gallery Route & RSC Page (app/projects/page.tsx, app/api/projects/route.ts)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -16,5 +16,9 @@
   - Transactional offline fixtures seeder (`scripts/seed.mjs`) ingesting all 41 projects, 30 judges, 40 teams, and rubric scores with deterministic test sessions
   - Session authentication helper and role guard (`lib/auth.ts`) enforcing FIG. 02 Role-Isolation Matrix with HTTP 401/403 responses
   - Next.js App Router middleware (`middleware.ts`) for header forwarding and static asset exclusion
-- **Pending Next Step:** Step 6: Public Gallery Route & RSC Page (T1.gallery - app/projects/page.tsx, app/api/projects/route.ts)
+  - Public Bento-Grid gallery RSC (`app/projects/page.tsx`) rendering all 41 fixture titles into server HTML
+  - Interactive search and category filter pills (`components/GalleryClient.tsx`) with zero server roundtrips
+  - API route handler (`app/api/projects/route.ts`) returning JSON project catalog
+  - Automatic portal root redirect from `/` to `/projects` (`app/page.tsx`)
+- **Pending Next Step:** Step 7: Deadline-Enforced Submission Route Handler (T1.closed_event - app/projects/new/route.ts)
 - **Known Issues / Blockers:** None.

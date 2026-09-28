@@ -1,21 +1,21 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 5 COMPLETION CHECKLIST
-# Session Authentication Helper & Middleware
+# STEP 6 COMPLETION CHECKLIST
+# Public Gallery Route & RSC Page
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify existence of auth helper and middleware:
+[ ] Verify existence of gallery and API files:
     ```
-    ls -la lib/auth.ts middleware.ts scripts/test-auth.mjs
+    ls -la app/projects/page.tsx app/api/projects/route.ts components/GalleryClient.tsx components/ProjectCard.tsx
     ```
-    Expected: All three files exist.
+    Expected: All four files exist.
 
-[ ] Run auth unit tests:
+[ ] Confirm root redirect in app/page.tsx:
     ```
-    node scripts/test-auth.mjs
+    cat app/page.tsx
     ```
-    Expected: "ALL 7 AUTH VERIFICATION TESTS PASSED CLEANLY."
+    Expected: redirect('/projects') present.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
@@ -30,16 +30,24 @@
     ```
     npm run build
     ```
-    Expected: "Compiled successfully" with Middleware included.
+    Expected: "Compiled successfully" with route `○ /projects` and `ƒ /api/projects`.
+
+[ ] Verify fixture project titles embedded in server HTML:
+    ```
+    Select-String -Path .next/server/app/projects.html -Pattern "Glass Signal"
+    ```
+    Expected: Match found in pre-rendered HTML.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `lib/auth.ts` — Authentication helper, role guard (`requireRole`), and audit logger enforcing FIG. 02 Matrix
-[ ] File: `middleware.ts` — Next.js App Router middleware for path matching and header forwarding
-[ ] File: `scripts/test-auth.mjs` — Automated verification tests for cookie extraction and role guard status codes
-[ ] Feature: Strict backend role enforcement: 401 Unauthorized for missing auth, 403 Forbidden for role mismatch
+[ ] File: `app/projects/page.tsx` — Public Bento-Grid gallery RSC page with zero pagination and all 41 project titles in server HTML
+[ ] File: `app/api/projects/route.ts` — API Route Handler GET /api/projects returning JSON project records
+[ ] File: `components/GalleryClient.tsx` — Interactive search, category filter pills, and bento grid layout
+[ ] File: `components/ProjectCard.tsx` — Responsive project card component with hover lift animation
+[ ] File: `app/page.tsx` — Updated root redirect to /projects
+[ ] Feature: T1 Gallery & Fixture Project Display — satisfies run.py T1 checks
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -47,31 +55,31 @@
 
 Test 1 — Files Exist:
 ```
-ls -la lib/auth.ts middleware.ts scripts/test-auth.mjs
+ls -la app/projects/page.tsx app/api/projects/route.ts components/GalleryClient.tsx components/ProjectCard.tsx app/page.tsx
 ```
-✅ Expected: lib/auth.ts, middleware.ts, scripts/test-auth.mjs appear.
-❌ If missing: Check repository root or lib directory.
+✅ Expected: All files appear.
+❌ If missing: Check app/ and components/ directories.
 
-Test 2 — Auth Helper Unit Tests:
-```
-node scripts/test-auth.mjs
-```
-✅ Expected: All 7 test cases pass with exit code 0.
-❌ If errors: Check cookie regex or role guard logic in `lib/auth.ts`.
-
-Test 3 — TypeScript Compilation:
+Test 2 — TypeScript Compilation:
 ```
 npx tsc --noEmit
 ```
 ✅ Expected: Clean exit 0 with 0 type errors.
-❌ If errors: Check types imported from `src/types/db.ts`.
+❌ If errors: Check React component prop types.
 
-Test 4 — Next.js Standalone Build:
+Test 3 — Next.js Standalone Build:
 ```
 npm run build
 ```
-✅ Expected: "Compiled successfully" with `ƒ Middleware` listed in build trace.
-❌ If errors: Check Next.js middleware export format.
+✅ Expected: "Compiled successfully" with static route `○ /projects`.
+❌ If errors: Check import paths or RSC syntax.
+
+Test 4 — Fixture Title Assertion:
+```
+Select-String -Path .next/server/app/projects.html -Pattern "Glass Signal"
+```
+✅ Expected: Match found in `.next/server/app/projects.html`.
+❌ If missing: Ensure `app/projects/page.tsx` pre-renders all project titles in the initial HTML markup.
 
 Test 5 — Security Check:
 [ ] Verify .env is in .gitignore
@@ -88,11 +96,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 5: Session Authentication Helper & Middleware — lib/auth.ts and middleware.ts"
+git commit -m "Step 6: Public Gallery Route & RSC Page — app/projects/page.tsx and components/GalleryClient.tsx"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 6 until:
+✋ DO NOT proceed to Step 7 until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully
