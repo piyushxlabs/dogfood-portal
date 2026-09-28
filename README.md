@@ -8,6 +8,7 @@
 [![Normalization](https://img.shields.io/badge/Calibration-Z--Score%20%CF%83%3D0.31-0d9488?style=for-the-badge)](#z-score-calibration-engine)
 [![API](https://img.shields.io/badge/Spec-OpenAPI%203.0.3-ea580c?style=for-the-badge)](docs/openapi.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict%20Zero%20any-3178c6?style=for-the-badge&logo=typescript)](src/types/db.ts)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 ---
 
@@ -313,6 +314,12 @@ npm run dev
 | `FIXTURES_PATH` | Auto-detected | Override path to `fixtures.json` |
 
 All environment variables are pre-configured in `docker-compose.yml` for zero-setup operation.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
 
 ---
 
