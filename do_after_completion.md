@@ -1,59 +1,45 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 1 COMPLETION CHECKLIST
-# Next.js App Router Scaffold & Dependency Manifest
+# STEP 2 COMPLETION CHECKLIST
+# Acceptance Configuration Baseline
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Review the generated configuration files:
+[ ] Verify .dogfood.toml content at repository root:
     ```
-    cat package.json
-    cat next.config.ts
+    cat .dogfood.toml
     ```
-    Expected: Standalone output and Next.js 15 manifest present.
+    Expected: claimed = ["T1", "T2"] and all 5 routes defined.
 
-[ ] Confirm node_modules and .next directory exist:
+[ ] Confirm fixtures.json and run.py are present at repository root:
     ```
-    ls -d node_modules .next
+    ls -la .dogfood.toml fixtures.json run.py
     ```
-    Expected: Both directories exist.
+    Expected: All three files exist at the project root.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Run test build verification:
+[ ] Test config loading with run.py parser:
     ```
-    npm run build
+    python -c "import run; cfg = run.load_config('.dogfood.toml'); print('Claimed:', cfg['tiers']['claimed'])"
     ```
-    Expected: "Compiled successfully", generating static pages with standalone directory in `.next/standalone`.
-    If wrong: Ensure all packages are installed with `npm install`.
+    Expected: Claimed: ['T1', 'T2']
 
-[ ] Verify standalone bundle was created:
+[ ] Test fixture loading with run.py loader:
     ```
-    ls -d .next/standalone
+    python -c "import run; f, p = run.load_fixture(None, '.dogfood.toml'); print('Loaded', len(f['projects']), 'projects from', p)"
     ```
-    Expected: `.next/standalone` folder exists.
+    Expected: Loaded 41 projects from fixtures.json
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `package.json` — Next.js 15, React 19, postgres.js, Tailwind CSS, Lucide Icons
-[ ] File: `tsconfig.json` — Strict TypeScript compiler config with `@/*` aliases
-[ ] File: `next.config.ts` — Standalone output and unoptimized images for air-gapped container
-[ ] File: `tailwind.config.ts` — Dark mode class configuration and zinc theme tokens
-[ ] File: `postcss.config.mjs` — PostCSS configuration with Tailwind CSS and Autoprefixer
-[ ] File: `.env.example` — Reference environment variables template
-[ ] File: `.env.local` — Local environment variables (Port 8080, telemetry disabled)
-[ ] File: `.gitignore` — Ignores node_modules, build outputs, and all `.env` files
-[ ] File: `src/types/db.ts` — Authoritative TypeScript interfaces matching DATA-MODEL.md Section 3B
-[ ] File: `app/globals.css` — Global CSS variables for dark zinc theme and system font stack
-[ ] File: `app/layout.tsx` — Root layout with dark class and system font typography
-[ ] File: `app/page.tsx` — Verification landing page with portal navigation targets
-[ ] Package: next@15.5.26 — Framework runtime for React Server Components and Route Handlers
-[ ] Package: postgres@3.4.5 — PostgreSQL client for air-gapped database interactions
-[ ] Package: lucide-react@0.468.0 — Icon library for UI dashboards
-[ ] Package: tailwindcss@3.4.17 — Utility-first CSS framework
+[ ] File: `.dogfood.toml` — Acceptance test config mapping base_url, claimed tiers, auth headers, and routes
+[ ] File: `fixtures.json` — Root-level synthetic dataset with 41 projects, 30 judges, 40 teams, and scores
+[ ] File: `run.py` — Official automated acceptance test suite from Hackathon Raptors
+[ ] Feature: Baseline Acceptance Configuration — 100% compliant with run.py syntax and validation harness
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -61,31 +47,26 @@
 
 Test 1 — Files Exist:
 ```
-ls -la package.json next.config.ts tsconfig.json tailwind.config.ts .env.local src/types/db.ts app/layout.tsx
+ls -la .dogfood.toml fixtures.json run.py
 ```
-✅ Expected: All scaffold files listed above appear.
-❌ If missing: Re-generate the missing file according to Step 1 specification.
+✅ Expected: .dogfood.toml, fixtures.json, run.py present in root directory.
+❌ If missing: Copy from docs/ or re-create .dogfood.toml.
 
-Test 2 — Environment / Dependencies:
+Test 2 — TOML Syntax & Route Integrity:
 ```
-npm list next postgres lucide-react
+python -c "import run; cfg = run.load_config('.dogfood.toml'); assert cfg['portal']['base_url'] == 'http://localhost:8080'; assert cfg['tiers']['claimed'] == ['T1', 'T2']; assert cfg['routes']['gallery'] == '/projects'; assert cfg['routes']['submit'] == '/projects/new'; assert cfg['routes']['judge_scores'] == '/api/judge/scores'; assert cfg['routes']['peer_scores'] == '/api/judge/scores?judge=judge_a'; assert cfg['routes']['csv_export'] == '/api/export.csv'; print('ALL ROUTES & CLAIMS VALID')"
 ```
-✅ Expected: next@15.5.26, postgres@3.4.5, lucide-react@0.468.0 installed without missing dependency errors.
-❌ If errors: Run `npm install`.
+✅ Expected: "ALL ROUTES & CLAIMS VALID"
+❌ If errors: Check `.dogfood.toml` formatting.
 
-Test 3 — Server or Process Start:
+Test 3 — Fixture Parsing:
 ```
-npm run build
+python -c "import json; data = json.load(open('fixtures.json')); print('Event:', data['event']['id']); print('Projects:', len(data['projects']))"
 ```
-✅ Expected: "Compiled successfully" with zero TypeScript errors.
-❌ If errors: Check `tsconfig.json` or syntax errors in `app/` or `src/types/db.ts`.
+✅ Expected: Event: evt_01, Projects: 41
+❌ If errors: Ensure `fixtures.json` is a valid copy of `docs/fixtures.json`.
 
-Test 4 — Functional Check:
-Inspect `next.config.ts` to ensure `output: "standalone"` is set.
-✅ Expected: `output: "standalone"` is present.
-❌ If wrong: Update `next.config.ts` to include `output: "standalone"`.
-
-Test 5 — Security Check:
+Test 4 — Security Check:
 [ ] Verify .env is in .gitignore
     ```
     Get-Content .gitignore | Select-String "\.env"
@@ -100,11 +81,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 1: Next.js App Router Scaffold & Dependency Manifest — offline standalone build"
+git commit -m "Step 2: Acceptance Configuration Baseline — .dogfood.toml, fixtures.json, run.py"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 2 until:
+✋ DO NOT proceed to Step 3 until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully

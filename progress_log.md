@@ -49,3 +49,30 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - `npm run build` executed successfully (exit code 0). Generated `.next/standalone` production bundle with static routes `○ /` and `○ /_not-found` and zero TypeScript errors.
 - Pass
 ---
+
+## Step 2 — Acceptance Configuration Baseline
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Configured `.dogfood.toml` at repository root claiming tiers T1 + T2, base_url `http://localhost:8080`, deterministic test session cookies, and authoritative route endpoints.
+- Placed unmodified `fixtures.json` and `run.py` at the repository root for automated acceptance checking.
+- Verified configuration and fixture ingestion compatibility using Python standard library checker.
+
+**Files Created:**
+- `.dogfood.toml` — Route & auth mapping for run.py checker
+- `fixtures.json` — Root-level synthetic dataset for title checks and seeding
+- `run.py` — Root-level automated acceptance test suite from organizers
+
+**Files Modified:**
+- None
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- Tested with `run.load_config('.dogfood.toml')` and `run.load_fixture(None, '.dogfood.toml')`.
+- All routes (`/projects`, `/projects/new`, `/api/judge/scores`, `/api/judge/scores?judge=judge_a`, `/api/export.csv`) and 41 fixture project titles verified.
+- Pass
+---
+

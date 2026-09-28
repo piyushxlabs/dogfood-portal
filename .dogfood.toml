@@ -1,0 +1,26 @@
+# .dogfood.toml
+# Acceptance verification configuration for DOGFOOD 2026
+# Run the checker with:  python3 run.py .dogfood.toml
+
+[portal]
+# Where portal is listening after `docker compose up`
+base_url = "http://localhost:8080"
+
+[tiers]
+# Strictly claimed tiers T1 + T2 (zero overclaim penalty)
+claimed = ["T1", "T2"]
+pitch = "Self-contained, offline-first hackathon portal with mathematical Z-score normalization and backend-enforced RBAC isolation."
+
+[auth]
+# Deterministic session cookies matching pre-seeded database accounts
+organizer   = "Cookie: session=org_7f2a"
+judge_a     = "Cookie: session=jdg_a_91bc"
+judge_b     = "Cookie: session=jdg_b_44de"
+participant = "Cookie: session=prt_2e88"
+
+[routes]
+gallery      = "/projects"
+submit       = "/projects/new"
+judge_scores = "/api/judge/scores"
+peer_scores  = "/api/judge/scores?judge=judge_a"
+csv_export   = "/api/export.csv"

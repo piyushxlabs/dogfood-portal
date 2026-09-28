@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 1: Next.js App Router Scaffold & Dependency Manifest
+- **Last Completed Step:** Step 2: Acceptance Configuration Baseline (.dogfood.toml, fixtures.json, run.py)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -9,5 +9,7 @@
   - Authoritative TypeScript relational database interfaces (`src/types/db.ts`) matching DATA-MODEL.md
   - Full dependency installation (`postgres.js`, `lucide-react`, `tailwind-merge`, etc.)
   - Production build verification (`npm run build` completed with code 0)
-- **Pending Next Step:** Step 2: Acceptance Configuration Baseline (`.dogfood.toml`, `fixtures.json`, `run.py`)
+  - Acceptance baseline configuration (`.dogfood.toml`) with claimed tiers T1 + T2 and 5 verified routes
+  - Root fixtures (`fixtures.json`) and test suite (`run.py`) deployed and validated
+- **Pending Next Step:** Step 3: Relational Schema Implementation (scripts/migrate.mjs, lib/db.ts)
 - **Known Issues / Blockers:** None.

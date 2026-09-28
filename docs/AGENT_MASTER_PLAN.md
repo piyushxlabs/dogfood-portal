@@ -129,7 +129,9 @@ your-repo/
 │   ├── globals.css               # Tailwind CSS base & utilities
 │   ├── page.tsx                  # Public landing / redirect to /projects
 │   ├── projects/
-│   │   └── page.tsx              # T1: Public Bento-Grid Gallery (RSC)
+│   │   ├── page.tsx              # T1: Public Bento-Grid Gallery (RSC)
+│   │   └── new/
+│   │       └── route.ts          # T1: POST /projects/new (Deadline check)
 │   ├── judge/
 │   │   ├── page.tsx              # Judge portal redirect / assigned projects
 │   │   └── review/
@@ -140,9 +142,7 @@ your-repo/
 │   │       └── page.tsx          # T2: Organizer Mission Control Dashboard
 │   └── api/
 │       ├── projects/
-│       │   ├── route.ts          # T1: GET /projects JSON fallback / search
-│       │   └── new/
-│       │       └── route.ts      # T1: POST /projects/new (Deadline check)
+│       │   └── route.ts          # T1: GET /projects JSON fallback / search
 │       ├── judge/
 │       │   └── scores/
 │       │       └── route.ts      # T2: GET/POST /api/judge/scores (Role-isolated)
@@ -528,7 +528,7 @@ Coding agent ko in 6 sequential phases aur 14 atomic steps me build execute karn
 #### STEP 7: Deadline-Enforced Submission Route Handler (`T1.closed_event`)
 
 * **Phase:** Phase 3
-* **Target Files:** `app/api/projects/new/route.ts`
+* **Target Files:** `app/projects/new/route.ts`
 * **Action:** Implement `POST /projects/new` Route Handler. Check caller role == `participant` via `lib/auth.ts`. Compare `Date.now() > event.submissions_close`. Since fixture date is in the past (`2026-03-01`), immediately return `NextResponse.json({ error: "Submissions for this event are closed" }, { status: 400 })`.
 * **Dependencies:** STEP 5
 * **Verification:** `curl -X POST http://localhost:8080/projects/new -H "Cookie: session=prt_2e88" -d '{"title":"probe"}'` returns HTTP 400.

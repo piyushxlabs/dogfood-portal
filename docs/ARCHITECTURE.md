@@ -1,4 +1,4 @@
-﻿
+
 # ARCHITECTURE.md
 **Project:** Dogfood 2026 Hackathon PortalÂ Â 
 **Document:** System Architecture, Offline Runtime Topology & Security MatrixÂ Â 
@@ -381,7 +381,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY fixtures.json ./fixtures.json
-COPY scripts/seed.mjs ./scripts/seed.mjs
+COPY scripts ./scripts
 EXPOSE 8080
 CMD ["sh", "-c", "node scripts/migrate.mjs && node scripts/seed.mjs && node server.js"]
 ```
@@ -477,7 +477,9 @@ your-repo/
     ├── layout.tsx                  # Root layout: dark theme, font, global CSS
     ├── page.tsx                    # Landing page redirect
     ├── projects/
-    │   └── page.tsx                # T1: Public Bento-Grid Gallery (RSC)
+    │   ├── page.tsx                # T1: Public Bento-Grid Gallery (RSC)
+    │   └── new/
+    │       └── route.ts            # POST /projects/new (deadline check)
     ├── judge/
     │   └── review/
     │       └── [projectId]/
@@ -486,8 +488,6 @@ your-repo/
     │   └── dashboard/
     │       └── page.tsx            # T2: Mission Control Dashboard (RSC + Client)
     ├── api/
-    │   ├── projects/
-    │   │   └── route.ts            # POST /projects/new (deadline check)
     │   ├── judge/
     │   │   └── scores/
     │   │       └── route.ts        # GET/POST /api/judge/scores (role-isolated)
