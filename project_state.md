@@ -1,18 +1,18 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 12.2: Audit Remediation Blueprint (Phases A through E)
+- **Last Completed Step:** Step 12.3: Enterprise Scale (T3 Community + T4 Extensions + Spec Bonuses)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
   - Air-gapped standalone configuration (`next.config.ts`) with `images.unoptimized: true`
-  - Authoritative TypeScript relational database interfaces (`src/types/db.ts`) matching DATA-MODEL.md
+  - Authoritative TypeScript relational database interfaces (`src/types/db.ts`) matching DATA-MODEL.md plus Tier 3 & 4 tables
   - Full dependency installation (`postgres.js`, `lucide-react`, `tailwind-merge`, etc.)
   - Production build verification (`npm run build` completed with code 0)
   - Acceptance baseline configuration (`.dogfood.toml`) with claimed tiers T1 + T2 and 5 verified routes
   - Root fixtures (`fixtures.json`) and test suite (`run.py`) deployed and validated
   - PostgreSQL connection singleton (`lib/db.ts`) with connection pooling and hot-reload preservation
-  - Complete idempotent SQL DDL migration runner (`scripts/migrate.mjs`) covering all 11 tables and 6 indexes
+  - Complete idempotent SQL DDL migration runner (`scripts/migrate.mjs`) covering all 14 tables and 9 indexes
   - Transactional offline fixtures seeder (`scripts/seed.mjs`) ingesting all 41 projects, 30 judges, 40 teams, and rubric scores with deterministic test sessions
   - Session authentication helper and role guard (`lib/auth.ts`) enforcing FIG. 02 Role-Isolation Matrix with HTTP 401/403 responses
   - Next.js App Router middleware (`middleware.ts`) for header forwarding and static asset exclusion
@@ -32,8 +32,21 @@
   - Root Global Error Boundary (`app/global-error.tsx`) catching top-level React exceptions
   - Asynchronous non-blocking file I/O (`fs.promises.readFile`) across all gallery and API routes
   - Multi-Stage Standalone Docker Container (`Dockerfile`) and Docker Compose topology (`docker-compose.yml`) passing all 7/7 official acceptance checks in `run.py`
-  - Comprehensive End-to-End HTTP Checkpoint Test Suite (`scripts/verify-all-checkpoints.mjs`) passing 10/10 tests
+  - Tier 3 Community Voting API (`POST /api/vote`) with email syntax validation and HTTP 409 Conflict deduplication
+  - Tier 3 Anti-Bandwagon Results API (`GET /api/vote/results`) concealing tallies from public visitors and revealing full tallies to organizers
+  - Tier 3 Public Community Voting Gallery (`app/vote/page.tsx`) with Fisher-Yates randomized project ordering
+  - Tier 3 Project Comments API (`GET`/`POST /api/projects/[id]/comments`) with HTML entity XSS sanitization
+  - Tier 3 Project Details & Discussion View (`app/projects/[id]/page.tsx`) with embedded comment stream
+  - Tier 4 REST API v1 (`/api/v1/projects`, `/api/v1/tracks`, `/api/v1/leaderboard`, `/api/v1/export/bulk`) with query filtering, pagination, and role isolation
+  - Tier 4 OpenAPI 3.0.3 specification (`docs/openapi.json`) and interactive air-gapped documentation explorer (`app/api-docs/page.tsx`)
+  - Tier 4 Cryptographic Verifiable Participation Certificate (`/projects/[id]/certificate`) with SHA-256 tamper-proof seal and print styles
+  - Tier 4 Event Webhooks engine (`webhooks` table, `POST /api/webhooks`, dispatcher `lib/webhooks.ts`) with HMAC-SHA256 signatures
+  - Tier 4 Standalone responsive Embeddable Widget (`app/embed/gallery/page.tsx`) for sponsor portals
+  - Spec Bonus (+3): Comprehensive Threat Model documentation (`docs/THREAT-MODEL.md`)
+  - Spec Bonus (+5): Bradley-Terry Pairwise Judging Estimator (`lib/pairwise.ts` & `scripts/test-pairwise.mjs`)
+  - Comprehensive Test Suite (`scripts/test-t3-t4.mjs`) verifying all 14 Tier 3/4 assertions
 - **Pending Next Step:** Step 13: Final Submission Verification & Headless Demo Video Recording (Phase 6)
 - **Known Issues / Blockers:** None.
+
 
 

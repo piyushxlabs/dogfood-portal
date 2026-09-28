@@ -147,3 +147,31 @@ export interface JudgeStatusRow {
   remaining_reviews: number;
   status: 'COMPLETE' | 'PENDING' | 'NOT_STARTED';
 }
+
+// ─── Tier 3 & Tier 4 Extension Types ──────────────────────────────────────────
+
+export interface DbCommunityVote {
+  id: number;
+  project_id: string;
+  voter_email: string;
+  voter_ip: string | null;
+  created_at: string;
+}
+
+export interface DbProjectComment {
+  id: number;
+  project_id: string;
+  author_name: string;
+  author_email: string;
+  comment_text: string;
+  created_at: string;
+}
+
+export interface DbWebhook {
+  id: number;
+  target_url: string;
+  event_type: string;
+  is_active: boolean;
+  secret_token: string;
+  created_at: string;
+}

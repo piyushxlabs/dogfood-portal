@@ -77,7 +77,9 @@ export function ProjectCard({
           id={`project-title-${project.id}`}
           className="text-lg font-bold tracking-tight text-zinc-100 group-hover:text-white transition-colors mb-2 line-clamp-1"
         >
-          {project.title}
+          <a href={`/projects/${project.id}`} className="hover:underline">
+            {project.title}
+          </a>
         </h3>
 
         <p className="text-sm text-zinc-400 line-clamp-3 leading-relaxed mb-4">
@@ -91,19 +93,28 @@ export function ProjectCard({
           <span>{formattedDate}</span>
         </div>
 
-        {project.repo_url && (
+        <div className="flex items-center gap-3">
           <a
-            id={`project-repo-${project.id}`}
-            href={project.repo_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-zinc-400 hover:text-zinc-100 transition-colors"
+            href={`/projects/${project.id}`}
+            className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
           >
-            <GitBranch className="w-3.5 h-3.5" />
-            <span>Repository</span>
-            <ExternalLink className="w-3 h-3 ml-0.5 opacity-60" />
+            Details
           </a>
-        )}
+
+          {project.repo_url && (
+            <a
+              id={`project-repo-${project.id}`}
+              href={project.repo_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-zinc-400 hover:text-zinc-100 transition-colors"
+            >
+              <GitBranch className="w-3.5 h-3.5" />
+              <span>Repository</span>
+              <ExternalLink className="w-3 h-3 ml-0.5 opacity-60" />
+            </a>
+          )}
+        </div>
       </div>
     </article>
   );

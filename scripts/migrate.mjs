@@ -186,6 +186,45 @@ const DDL_STATEMENTS = [
       );
     `,
   },
+  {
+    name: 'community_votes',
+    sql: `
+      CREATE TABLE IF NOT EXISTS community_votes (
+        id SERIAL PRIMARY KEY,
+        project_id VARCHAR(64) NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+        voter_email VARCHAR(255) NOT NULL,
+        voter_ip VARCHAR(64),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (voter_email, project_id)
+      );
+    `,
+  },
+  {
+    name: 'project_comments',
+    sql: `
+      CREATE TABLE IF NOT EXISTS project_comments (
+        id SERIAL PRIMARY KEY,
+        project_id VARCHAR(64) NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+        author_name VARCHAR(255) NOT NULL,
+        author_email VARCHAR(255) NOT NULL,
+        comment_text TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+    `,
+  },
+  {
+    name: 'webhooks',
+    sql: `
+      CREATE TABLE IF NOT EXISTS webhooks (
+        id SERIAL PRIMARY KEY,
+        target_url TEXT NOT NULL,
+        event_type VARCHAR(64) NOT NULL,
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        secret_token VARCHAR(128) NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+    `,
+  },
 ];
 
 const INDEX_STATEMENTS = [
@@ -195,6 +234,9 @@ const INDEX_STATEMENTS = [
   { name: 'idx_scores_judge', sql: 'CREATE INDEX IF NOT EXISTS idx_scores_judge ON scores(judge_id);' },
   { name: 'idx_sessions_lookup', sql: 'CREATE INDEX IF NOT EXISTS idx_sessions_lookup ON sessions(session_id, expires_at);' },
   { name: 'idx_audit_logs_actor', sql: 'CREATE INDEX IF NOT EXISTS idx_audit_logs_actor ON audit_logs(actor_id);' },
+  { name: 'idx_community_votes_project', sql: 'CREATE INDEX IF NOT EXISTS idx_community_votes_project ON community_votes(project_id);' },
+  { name: 'idx_project_comments_project', sql: 'CREATE INDEX IF NOT EXISTS idx_project_comments_project ON project_comments(project_id);' },
+  { name: 'idx_webhooks_active', sql: 'CREATE INDEX IF NOT EXISTS idx_webhooks_active ON webhooks(is_active);' },
 ];
 
 async function runMigration() {
@@ -216,7 +258,7 @@ async function runMigration() {
     }
 
     console.log('======================================================================');
-    console.log('[MIGRATION] SUCCESS: All 11 tables and 6 indexes created/verified.');
+    console.log('[MIGRATION] SUCCESS: All 14 tables and 9 indexes created/verified.');
     console.log('======================================================================');
   } catch (err) {
     console.error('======================================================================');

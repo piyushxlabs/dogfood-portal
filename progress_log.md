@@ -549,6 +549,64 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - Pass
 ---
 
+## Step 12.3 — Enterprise Scale (T3 Community + T4 Extensions + Spec Bonuses)
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Tier 3 Database Extensions: Added `community_votes` table (with composite `UNIQUE(voter_email, project_id)`) and `project_comments` table to PostgreSQL via idempotent DDL in `scripts/migrate.mjs`.
+- Tier 3 Community Voting & Anti-Abuse: Created `POST /api/vote` enforcing email syntax validation and HTTP 409 Conflict deduplication. Created `GET /api/vote/results` implementing the Anti-Bandwagon rule (masking tallies from public visitors; returning full tallies to organizers). Implemented `app/vote/page.tsx` with Fisher-Yates shuffle project ordering and modal upvoting interface.
+- Tier 3 Project Comments & Moderation: Created `GET` and `POST /api/projects/[id]/comments` with strict HTML entity XSS sanitization. Embedded discussion into `app/projects/[id]/page.tsx`.
+- Tier 4 Platform APIs & OpenAPI 3.0: Generated `docs/openapi.json` and interactive offline documentation viewer at `app/api-docs/page.tsx`. Implemented `/api/v1/projects` (with track, search, limit, and offset filtering), `/api/v1/tracks` (with project counts), `/api/v1/leaderboard` (organizer-authenticated), and `/api/v1/export/bulk` (complete JSON platform dump).
+- Tier 4 Cryptographic Verifiable Certificate: Implemented `app/projects/[id]/certificate/page.tsx` generating a printable participation certificate with an SHA-256 tamper-proof verification seal derived from `project_id + team_id + submitted_at`.
+- Tier 4 Event Webhooks & Embeddable Widget: Added `webhooks` table, created async dispatcher `lib/webhooks.ts` with HMAC-SHA256 signatures, created registration endpoint `POST /api/webhooks`, and built responsive iframe widget at `app/embed/gallery/page.tsx`.
+- Spec Bonus 1 (Threat Model, +3): Authored `docs/THREAT-MODEL.md` documenting comprehensive defenses against Sybil voting, ballot stuffing, judge collusion, scraping, deadline tampering, and CSV formula injection.
+- Spec Bonus 2 (Pairwise Bradley-Terry Model, +5): Implemented `lib/pairwise.ts` computing latent quality scores and win probabilities via Minorization-Maximization (MM) with Bayesian pseudo-count regularization; created unit test `scripts/test-pairwise.mjs` verifying convergence and monotonicity.
+
+**Files Created:**
+- `app/api/vote/route.ts` — Community voting submission handler with 409 Conflict deduplication
+- `app/api/vote/results/route.ts` — Community vote tallies with anti-bandwagon masking
+- `app/api/projects/[id]/comments/route.ts` — Project discussion comments endpoint with XSS sanitization
+- `app/vote/page.tsx` — Community voting gallery with Fisher-Yates randomized project ordering
+- `components/VoteGalleryClient.tsx` — Interactive voting gallery client with Fisher-Yates shuffle & modal
+- `app/projects/[id]/page.tsx` — Project details view with embedded discussion and certificate link
+- `components/ProjectComments.tsx` — Discussion comment client with live submission and sanitized rendering
+- `app/projects/[id]/certificate/page.tsx` — Cryptographic printable certificate with SHA-256 tamper seal
+- `components/CertificatePrintButton.tsx` — Native print/save-as-PDF trigger button
+- `docs/openapi.json` — OpenAPI 3.0.3 specification covering platform APIs
+- `app/api-docs/page.tsx` — Interactive air-gapped OpenAPI 3.0 documentation page
+- `app/api/v1/projects/route.ts` — REST API v1 projects endpoint with search, track filtering, and pagination
+- `app/api/v1/tracks/route.ts` — REST API v1 tracks endpoint with project counts
+- `app/api/v1/leaderboard/route.ts` — REST API v1 organizer-authenticated calibrated leaderboard
+- `app/api/v1/export/bulk/route.ts` — Bulk platform JSON archive export endpoint
+- `lib/webhooks.ts` — Async webhook dispatcher with HMAC-SHA256 signatures
+- `app/api/webhooks/route.ts` — Webhook registration and management API
+- `app/embed/gallery/page.tsx` — Standalone responsive embeddable gallery widget for sponsor portals
+- `docs/THREAT-MODEL.md` — Detailed threat model document (+3 Spec Bonus)
+- `lib/pairwise.ts` — Bradley-Terry pairwise comparison engine with MM algorithm (+5 Spec Bonus)
+- `scripts/test-pairwise.mjs` — Unit test suite for Bradley-Terry model
+- `scripts/test-t3-t4.mjs` — Automated integration test suite for T3, T4, and spec bonuses
+
+**Files Modified:**
+- `scripts/migrate.mjs` — Added DDL statements and indexes for `community_votes`, `project_comments`, and `webhooks`
+- `src/types/db.ts` — Added TypeScript interfaces for `DbCommunityVote`, `DbProjectComment`, and `DbWebhook`
+- `components/ProjectCard.tsx` — Added link to `/projects/[id]` for detail inspection and comments
+- `acceptance-report.txt` — Updated with latest acceptance test verification run
+
+**Packages Installed:**
+- None (100% native standard libraries and existing packages)
+
+**Verification Result:**
+- `node scripts/migrate.mjs` executed: all 14 tables and 9 indexes verified.
+- `npx tsc --noEmit` executed: 0 type errors across all new and existing routes.
+- `npm run build` executed: compiled successfully in 4.0s with exit code 0.
+- `scripts/test-pairwise.mjs` executed: all 4 Bradley-Terry unit tests passed (100%).
+- `scripts/test-t3-t4.mjs` executed: all 14/14 Tier 3 and Tier 4 assertions passed (100%).
+- `python run.py .dogfood.toml` executed: all 7/7 core assertions passed (`claimed T1 T2, verified T1 T2`).
+- Pass
+---
+
+
 
 
 

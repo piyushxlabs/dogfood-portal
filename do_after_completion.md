@@ -1,49 +1,58 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 12.2 COMPLETION CHECKLIST
-# Audit Remediation Blueprint (Phases A through E)
+# STEP 12.3 COMPLETION CHECKLIST
+# Enterprise Scale (T3 Community + T4 Extensions + Spec Bonuses)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Run the official acceptance test suite:
+[ ] Verify database tables and schema migrations in PostgreSQL:
     ```
-    python run.py .dogfood.toml
+    node scripts/migrate.mjs
     ```
-    Expected: `claimed T1 T2, verified T1 T2` with exit code 0.
+    Expected: "SUCCESS: All 14 tables and 9 indexes created/verified."
 
-[ ] Run the comprehensive 10-checkpoint HTTP verification script:
+[ ] Verify full test suite for Tier 3 and Tier 4:
     ```
-    node scripts/verify-all-checkpoints.mjs
+    node scripts/test-t3-t4.mjs
     ```
-    Expected: `[VERIFY-ALL] ALL 10/10 END-TO-END CHECKPOINTS PASSED SUCCESSFULLY!`
-
-[ ] Run the statistical normalization invariant test:
-    ```
-    node scripts/test-normalization.mjs
-    ```
-    Expected: `[TEST-NORMALIZATION] ALL 5 STATISTICAL & MATHEMATICAL TESTS PASSED.`
+    Expected: "RESULTS: 14/14 assertions passed (100%)"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Open http://localhost:8080/projects/new in your browser:
-    Expected: Rich dark-mode submission UI with "Submissions Closed for This Event" banner, read-only form, and a red "Test Late Submission (Triggers 400)" button. Clicking the button pops up the red toast "HTTP 400 Bad Request".
+[ ] Run official acceptance suite against local portal container:
+    ```
+    python run.py .dogfood.toml
+    ```
+    Expected: "claimed T1 T2, verified T1 T2" (All 7 PASS)
+    If wrong: Check container logs with `docker compose logs --tail=40 web`
 
-[ ] Open http://localhost:8080/organizer/dashboard as Organizer:
-    Expected: Click "Just now" refresh button on Calibrated Final Standings to test live auto-refresh against `/api/organizer/leaderboard`. Observe clean reload without page jumps.
-
-[ ] Check top navigation bar:
-    Expected: Sticky header with links (`Gallery`, `Submit`, `Judge Console`, `Mission Control`) and docked `Persona Switcher` on the far right with clean flex spacing and zero visual collisions.
+[ ] Run Bradley-Terry pairwise model unit test:
+    ```
+    npx tsx scripts/test-pairwise.mjs
+    ```
+    Expected: "SUCCESS: All 4 Bradley-Terry unit tests passed (100%)."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] Phase A: Scoped ballot retrieval in `app/judge/review/[projectId]/page.tsx` dynamically to active judge session (`currentJudgeId`).
-[ ] Phase B: Deleted `FIXTURE_BENCHMARKS` from `lib/normalization.ts`. Enforced 100% pure mathematical calculation and dynamic variance reduction without static fallbacks. Defensively cast PostgreSQL numeric values.
-[ ] Phase C: Implemented real role-isolated organizer APIs (`app/api/organizer/leaderboard/route.ts`, `app/api/organizer/judge-status/route.ts`, `app/api/organizer/calibration-summary/route.ts`). Connected `components/NormalizedLeaderboard.tsx` auto-refresh to live API.
-[ ] Phase D: Implemented interactive read-only submission UI on `GET /projects/new` (with "Deadline Closed" alert banner and late test button) while preserving `POST /projects/new` for `run.py`. Added `app/global-error.tsx`. Integrated `PersonaSwitcher` into sticky navigation header in `app/layout.tsx`.
-[ ] Phase E: Replaced synchronous `fs.readFileSync` with `await fs.promises.readFile` across `app/projects/page.tsx` and `app/api/projects/route.ts`. Added formula injection sanitization in `app/api/export.csv/route.ts` prepending `'` to text fields starting with `=`, `+`, `-`, or `@`.
+[ ] Table: `community_votes` — Unique `(voter_email, project_id)` constraint, IP tracking, 409 Conflict deduplication
+[ ] Table: `project_comments` — Relational discussion comments linked to projects
+[ ] Table: `webhooks` — Event-driven webhook registry with 256-bit secret tokens
+[ ] Route: `POST /api/vote` — RFC 5322 email syntax validation, duplicate vote refusal with HTTP 409
+[ ] Route: `GET /api/vote/results` — Anti-Bandwagon protection masking tallies for visitors and revealing for organizers
+[ ] Page: `app/vote/page.tsx` — Community voting gallery with client-side Fisher-Yates shuffle & voting modal
+[ ] Route: `GET / POST /api/projects/[id]/comments` — Comments API with HTML entity XSS sanitization
+[ ] Page: `app/projects/[id]/page.tsx` — Project details view with live comments and certificate link
+[ ] Page: `app/projects/[id]/certificate/page.tsx` — Cryptographic printable certificate with SHA-256 tamper seal
+[ ] Document: `docs/openapi.json` — OpenAPI 3.0.3 specification covering all platform endpoints
+[ ] Page: `app/api-docs/page.tsx` — Interactive air-gapped OpenAPI 3.0 documentation explorer
+[ ] Endpoints: `app/api/v1/projects`, `tracks`, `leaderboard`, `export/bulk` — Tier 4 REST APIs
+[ ] Utility: `lib/webhooks.ts` & `app/api/webhooks/route.ts` — HMAC-SHA256 signed event webhook dispatcher
+[ ] Widget: `app/embed/gallery/page.tsx` — Responsive embeddable iframe widget for sponsor portals
+[ ] Spec Bonus (+3): `docs/THREAT-MODEL.md` — Detailed threat model document
+[ ] Spec Bonus (+5): `lib/pairwise.ts` — Bradley-Terry MM pairwise judging engine
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -51,38 +60,38 @@
 
 Test 1 — Files Exist:
 ```
-dir /b app\global-error.tsx app\api\organizer\leaderboard\route.ts app\api\organizer\judge-status\route.ts app\api\organizer\calibration-summary\route.ts
+ls docs/openapi.json docs/THREAT-MODEL.md lib/pairwise.ts lib/webhooks.ts
 ```
-✅ Expected: All 4 files are listed.
-❌ If missing: Restore or re-create missing routes.
+✅ Expected: All 4 files exist and are populated.
+❌ If missing: Re-run file generation tool.
 
-Test 2 — Full Checkpoint Verification:
+Test 2 — Environment & Type Safety:
 ```
-node scripts/verify-all-checkpoints.mjs
+npx tsc --noEmit
 ```
-✅ Expected: 10/10 checkpoints PASS.
-❌ If errors: Verify container is listening on port 8080 via `docker compose ps`.
+✅ Expected: Exits with code 0 and zero TypeScript errors.
+❌ If errors: Fix typing inconsistencies in Route Handlers.
 
-Test 3 — Official Acceptance Checker:
-```
-python run.py .dogfood.toml
-```
-✅ Expected: `claimed T1 T2, verified T1 T2`
-❌ If errors: Check `.dogfood.toml` routes and database seeding.
-
-Test 4 — Next.js Local Build Check:
+Test 3 — Standalone Production Build:
 ```
 npm run build
 ```
-✅ Expected: Compiled successfully with zero TypeScript or lint errors.
+✅ Expected: Next.js builds standalone bundle with code 0.
+❌ If errors: Check Next.js dynamic routing parameters or component imports.
 
-Test 5 — Security Check:
-[ ] Verify .env is in .gitignore:
-    ```
-    type .gitignore | findstr .env
-    ```
-    ✅ Expected: `.env` appears in the output.
-    ❌ If missing: Add `.env` to .gitignore immediately.
+Test 4 — Functional T3 & T4 Verification:
+```
+node scripts/test-t3-t4.mjs
+```
+✅ Expected: 14/14 assertions PASS (voting deduplication 409, anti-bandwagon masking, bulk export, etc.).
+❌ If wrong: Ensure portal container is running on http://localhost:8080.
+
+Test 5 — Acceptance Suite Verification:
+```
+python run.py .dogfood.toml
+```
+✅ Expected: claimed T1 T2, verified T1 T2 (7/7 PASS).
+❌ If wrong: Check .dogfood.toml routes and session headers.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 GIT COMMIT
@@ -91,7 +100,7 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 12.2: Audit Remediation — dynamic math, scoped ballots, organizer APIs, and formula sanitization"
+git commit -m "Step 12.3: Enterprise Scale — T3 Community, T4 Extensions & Spec Bonuses"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
