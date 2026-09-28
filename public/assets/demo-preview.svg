@@ -1,0 +1,72 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="Dogfood 2026 System Walkthrough Demo Preview">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#09090b;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0d1117;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#09090b;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#059669;stop-opacity:0.20" />
+      <stop offset="60%" style="stop-color:#059669;stop-opacity:0.05" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:0" />
+    </radialGradient>
+    <linearGradient id="playGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981" />
+      <stop offset="100%" style="stop-color:#059669" />
+    </linearGradient>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#065f46;stop-opacity:0.6" />
+    </linearGradient>
+    <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a1a1e" stroke-width="0.5"/>
+    </pattern>
+    <clipPath id="frameClip">
+      <rect x="2" y="2" width="1276" height="716" rx="16" ry="16"/>
+    </clipPath>
+    <filter id="playShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#059669" flood-opacity="0.5"/>
+    </filter>
+    <filter id="textGlow">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#059669" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bgGrad)"/>
+  <rect width="1280" height="720" fill="url(#gridPattern)" clip-path="url(#frameClip)"/>
+  <ellipse cx="640" cy="370" rx="380" ry="320" fill="url(#glowGrad)"/>
+  <rect x="2" y="2" width="1276" height="716" rx="16" ry="16" fill="none" stroke="#059669" stroke-width="2" stroke-opacity="0.8"/>
+  <rect x="10" y="10" width="1260" height="700" rx="12" ry="12" fill="none" stroke="#059669" stroke-width="0.5" stroke-opacity="0.3"/>
+  <rect x="0" y="0" width="1280" height="56" rx="16" ry="16" fill="#0a160f" fill-opacity="0.9"/>
+  <rect x="0" y="40" width="1280" height="16" fill="#0a160f" fill-opacity="0.9"/>
+  <line x1="0" y1="56" x2="1280" y2="56" stroke="#059669" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="640" y="35" font-family="ui-monospace, monospace" font-size="13" font-weight="700" fill="#10b981" text-anchor="middle" letter-spacing="3">DOGFOOD 2026  --  OFFICIAL WALKTHROUGH DEMO  --  3:15 MIN  --  END-TO-END UNEDITED</text>
+  <text x="640" y="145" font-family="ui-sans-serif, system-ui, sans-serif" font-size="48" font-weight="800" fill="#f4f4f5" text-anchor="middle" letter-spacing="-1" filter="url(#textGlow)">Dogfood 2026</text>
+  <text x="640" y="195" font-family="ui-sans-serif, system-ui, sans-serif" font-size="24" font-weight="400" fill="#a1a1aa" text-anchor="middle" letter-spacing="1">Autonomous Air-Gapped Hackathon Platform</text>
+  <circle cx="640" cy="370" r="108" fill="none" stroke="#059669" stroke-width="1.5" stroke-opacity="0.3"/>
+  <circle cx="640" cy="370" r="90" fill="none" stroke="url(#ringGrad)" stroke-width="2"/>
+  <circle cx="640" cy="370" r="72" fill="#0f1c16" filter="url(#playShadow)"/>
+  <circle cx="640" cy="370" r="72" fill="url(#playGrad)" fill-opacity="0.12"/>
+  <circle cx="640" cy="370" r="72" fill="none" stroke="url(#ringGrad)" stroke-width="2"/>
+  <polygon points="624,342 624,398 675,370" fill="url(#playGrad)" filter="url(#playShadow)"/>
+  <text x="640" y="494" font-family="ui-monospace, monospace" font-size="14" font-weight="500" fill="#6b7280" text-anchor="middle" letter-spacing="2">AIR-GAPPED DOCKER  --  Z-SCORE CALIBRATION  --  FIG. 02 ROLE ISOLATION  --  OPENAPI 3.0</text>
+  <rect x="148" y="528" width="152" height="36" rx="8" fill="#18181b" stroke="#3f3f46" stroke-width="1"/>
+  <text x="224" y="551" font-family="ui-monospace, monospace" font-size="12" font-weight="600" fill="#e4e4e7" text-anchor="middle">Next.js 15 + TS</text>
+  <rect x="314" y="528" width="152" height="36" rx="8" fill="#18181b" stroke="#3f3f46" stroke-width="1"/>
+  <text x="390" y="551" font-family="ui-monospace, monospace" font-size="12" font-weight="600" fill="#e4e4e7" text-anchor="middle">PostgreSQL 16</text>
+  <rect x="480" y="528" width="162" height="36" rx="8" fill="#0a160f" stroke="#059669" stroke-width="1"/>
+  <text x="561" y="551" font-family="ui-monospace, monospace" font-size="12" font-weight="700" fill="#10b981" text-anchor="middle">sigma_norm = 0.31</text>
+  <rect x="656" y="528" width="152" height="36" rx="8" fill="#0a160f" stroke="#059669" stroke-width="1"/>
+  <text x="732" y="551" font-family="ui-monospace, monospace" font-size="12" font-weight="700" fill="#10b981" text-anchor="middle">Tier T1 to T4</text>
+  <rect x="822" y="528" width="152" height="36" rx="8" fill="#18181b" stroke="#3f3f46" stroke-width="1"/>
+  <text x="898" y="551" font-family="ui-monospace, monospace" font-size="12" font-weight="600" fill="#e4e4e7" text-anchor="middle">Docker Standalone</text>
+  <rect x="988" y="528" width="152" height="36" rx="8" fill="#18181b" stroke="#3f3f46" stroke-width="1"/>
+  <text x="1064" y="551" font-family="ui-monospace, monospace" font-size="12" font-weight="600" fill="#e4e4e7" text-anchor="middle">CWE-1236 Immune</text>
+  <rect x="0" y="660" width="1280" height="60" rx="0" fill="#0a160f" fill-opacity="0.95"/>
+  <rect x="0" y="660" width="1280" height="1" fill="#059669" fill-opacity="0.5"/>
+  <rect x="36" y="675" width="200" height="32" rx="6" fill="#059669" fill-opacity="0.15" stroke="#059669" stroke-width="1"/>
+  <text x="136" y="696" font-family="ui-monospace, monospace" font-size="13" font-weight="700" fill="#10b981" text-anchor="middle" letter-spacing="1">7/7 TIER VERIFIED</text>
+  <rect x="540" y="675" width="200" height="32" rx="6" fill="#059669" fill-opacity="0.15" stroke="#059669" stroke-width="1"/>
+  <text x="640" y="696" font-family="ui-monospace, monospace" font-size="13" font-weight="700" fill="#10b981" text-anchor="middle" letter-spacing="1">SHA-256 INTEGRITY</text>
+  <rect x="1044" y="675" width="200" height="32" rx="6" fill="#059669" fill-opacity="0.15" stroke="#059669" stroke-width="1"/>
+  <text x="1144" y="696" font-family="ui-monospace, monospace" font-size="13" font-weight="700" fill="#10b981" text-anchor="middle" letter-spacing="1">OFFLINE STANDALONE</text>
+</svg>
