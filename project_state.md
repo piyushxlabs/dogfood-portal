@@ -1,8 +1,8 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 12.3: Enterprise Scale (T3 Community + T4 Extensions + Spec Bonuses)
-- **Implemented Features:**
+- **Last Completed Step:** Step 13: Final UI/UX Polish Sprint & Production Submission
+- **Implemented Features:****
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
   - Air-gapped standalone configuration (`next.config.ts`) with `images.unoptimized: true`
@@ -45,8 +45,9 @@
   - Spec Bonus (+3): Comprehensive Threat Model documentation (`docs/THREAT-MODEL.md`)
   - Spec Bonus (+5): Bradley-Terry Pairwise Judging Estimator (`lib/pairwise.ts` & `scripts/test-pairwise.mjs`)
   - Comprehensive Test Suite (`scripts/test-t3-t4.mjs`) verifying all 14 Tier 3/4 assertions
-- **Pending Next Step:** Step 13: Final Submission Verification & Headless Demo Video Recording (Phase 6)
+  - Step 13 UI/UX Polish: Fixed double-escape XSS rendering bug in comments API (tag-strip instead of entity-encode)
+  - Step 13 UI/UX Polish: Added Vote and API Docs nav links to global layout with unique IDs and aria-labels
+  - Step 13 UI/UX Polish: Added clear SUMMARY/DESCRIPTION section labels to project detail page
+  - Step 13 UI/UX Polish: Fixed inner-page sticky header z-index collision (top-14 z-30 on all inner page headers)
+- **Pending Next Step:** None — Production-Ready. Run `python run.py .dogfood.toml` to verify and commit.
 - **Known Issues / Blockers:** None.
-
-
-

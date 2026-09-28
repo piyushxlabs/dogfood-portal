@@ -8,16 +8,18 @@ import sql from '@/lib/db';
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 /**
- * Strict XSS sanitizer converting unsafe HTML characters to HTML entities
+ * XSS sanitizer: strips all HTML tags entirely, leaving clean plain text.
+ * React JSX will then safely render the result without double-encoding HTML entities.
+ * This prevents both XSS injection and the &lt;/&gt; double-escape rendering defect.
  */
 function sanitizeText(input: string): string {
-  return input
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+  // Remove all HTML tags (including self-closing and malformed variants)
+  const stripped = input.replace(/<[^>]*>/g, '');
+  // Also decode any entity-encoded tags that could bypass the strip
+  const decoded = stripped
+    .replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+    .replace(/<[^>]*>/g, ''); // Strip again after entity decode
+  return decoded.trim();
 }
 
 export async function GET(

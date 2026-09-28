@@ -128,3 +128,15 @@ Dogfood 2026 Hackathon Portal Architectural Decisions
 
 
 
+
+---
+## Step 13 — XSS Sanitization Strategy: Tag-Strip vs Entity-Encode
+**Decision:** Changed sanitizeText() in pp/api/projects/[id]/comments/route.ts from HTML entity-encoding to HTML tag-stripping via regex.
+**Reason:** Entity-encoding stored &lt;script&gt; in DB. React JSX then double-escaped it, rendering literal &lt;script&gt; on screen. React handles XSS automatically in JSX text nodes — we only strip dangerous tags at ingestion.
+**Impact:** Comments store and display clean plain text. XSS payloads are neutralized at ingestion without double-encoding artifacts.
+
+---
+## Step 13 — Inner Page Sticky Header Z-Index Collision Fix
+**Decision:** Changed all inner-page sticky section headers from sticky top-0 z-40 to sticky top-14 z-30.
+**Reason:** Global layout header is h-14 (56px) with sticky top-0 z-50. Inner headers at 	op-0 z-40 slide beneath the global header during scroll. Using 	op-14 pins them flush below the global nav.
+**Impact:** All pages scroll cleanly without the double-header overlap glitch.

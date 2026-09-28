@@ -178,17 +178,21 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
             </div>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-4">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
             {project.title}
           </h1>
 
+          <p className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">SUMMARY</p>
           <p className="text-base text-zinc-300 leading-relaxed mb-6 font-normal">
             {project.summary}
           </p>
 
           {project.description && (
-            <div className="mb-6 p-4 bg-zinc-950/60 rounded-xl border border-zinc-800/80 text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
-              {project.description}
+            <div className="mb-6">
+              <p className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">DESCRIPTION</p>
+              <div className="p-4 bg-zinc-950/60 rounded-xl border border-zinc-800/80 text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                {project.description}
+              </div>
             </div>
           )}
 

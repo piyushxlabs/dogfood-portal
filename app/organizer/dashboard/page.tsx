@@ -208,8 +208,8 @@ export default async function OrganizerDashboardPage() {
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-zinc-800 selection:text-zinc-100">
-      {/* Top Navigation Bar */}
-      <header className="border-b border-zinc-800 bg-zinc-900/60 backdrop-blur sticky top-0 z-40">
+      {/* Top Navigation Bar — sits below global nav at top-14 */}
+      <header className="border-b border-zinc-800 bg-zinc-900/60 backdrop-blur sticky top-14 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-zinc-700 to-zinc-900 border border-zinc-700/80 flex items-center justify-center shadow-inner">

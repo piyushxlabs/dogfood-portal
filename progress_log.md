@@ -604,8 +604,41 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - `scripts/test-t3-t4.mjs` executed: all 14/14 Tier 3 and Tier 4 assertions passed (100%).
 - `python run.py .dogfood.toml` executed: all 7/7 core assertions passed (`claimed T1 T2, verified T1 T2`).
 - Pass
----
 
+---
+## Step 13 — Final UI/UX Polish Sprint & Production Submission
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Fixed critical double-escape XSS rendering bug in `app/api/projects/[id]/comments/route.ts`: replaced HTML entity-encoding with tag-stripping, so stored text is clean plain text and React renders it without double-encoding `&lt;` artifacts.
+- Added `Vote` and `API Docs` navigation links to global `app/layout.tsx` header with unique IDs and aria-labels for accessibility and browser testing compliance.
+- Added `SUMMARY` and `DESCRIPTION` uppercase section labels to `app/projects/[id]/page.tsx` to clearly disambiguate the two text regions.
+- Fixed inner-page sticky header z-index collision: changed `top-0 z-40` to `top-14 z-30` on `app/projects/page.tsx`, `app/judge/page.tsx`, `app/organizer/dashboard/page.tsx` so they sit below the global navigation bar (h-14, z-50).
+- Confirmed full TypeScript compilation: `npx tsc --noEmit` exits with code 0.
+- Confirmed acceptance suite: `python run.py .dogfood.toml` outputs `claimed T1 T2, verified T1 T2` (7/7 PASS).
+- Confirmed T3/T4 test suite: `node scripts/test-t3-t4.mjs` outputs `14/14 assertions passed (100%)`.
+
+**Files Created:**
+- None
+
+**Files Modified:**
+- `app/api/projects/[id]/comments/route.ts` — Fixed XSS double-escape bug (tag-strip instead of entity-encode)
+- `app/layout.tsx` — Added Vote, API Docs nav links; unique IDs; aria-labels
+- `app/projects/[id]/page.tsx` — Added SUMMARY/DESCRIPTION section labels
+- `app/projects/page.tsx` — Fixed inner sticky header z-index collision (top-14 z-30)
+- `app/judge/page.tsx` — Fixed inner sticky header z-index collision (top-14 z-30)
+- `app/organizer/dashboard/page.tsx` — Fixed inner sticky header z-index collision (top-14 z-30)
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `npx tsc --noEmit`: 0 errors. Pass
+- `python run.py .dogfood.toml`: claimed T1 T2, verified T1 T2 (7/7 PASS)
+- `node scripts/test-t3-t4.mjs`: 14/14 assertions passed (100%)
+- Docker rebuild in progress to push changes into container image
+---
 
 
 

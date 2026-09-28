@@ -1,58 +1,55 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 12.3 COMPLETION CHECKLIST
-# Enterprise Scale (T3 Community + T4 Extensions + Spec Bonuses)
+# STEP 13 COMPLETION CHECKLIST
+# Final UI/UX Polish Sprint & Production Submission
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify database tables and schema migrations in PostgreSQL:
+[ ] Verify Docker containers are healthy:
+    ```
+    docker compose ps
+    ```
+    Expected: Both `dogfood-db` and `dogfood-portal` show STATUS: Up (healthy)
+
+[ ] Verify database migration is current:
     ```
     node scripts/migrate.mjs
     ```
     Expected: "SUCCESS: All 14 tables and 9 indexes created/verified."
 
-[ ] Verify full test suite for Tier 3 and Tier 4:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏰ AFTER code was generated — do these now:
+
+[ ] Run official acceptance suite (MUST show all 7 PASS):
+    ```
+    python run.py .dogfood.toml
+    ```
+    Expected: "claimed T1 T2, verified T1 T2"
+    If wrong: Check container logs with `docker compose logs --tail=40 web`
+
+[ ] Run T3/T4 integration test suite:
     ```
     node scripts/test-t3-t4.mjs
     ```
     Expected: "RESULTS: 14/14 assertions passed (100%)"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⏰ AFTER code was generated — do these now:
-
-[ ] Run official acceptance suite against local portal container:
+[ ] Run TypeScript type-check:
     ```
-    python run.py .dogfood.toml
+    npx tsc --noEmit
     ```
-    Expected: "claimed T1 T2, verified T1 T2" (All 7 PASS)
-    If wrong: Check container logs with `docker compose logs --tail=40 web`
-
-[ ] Run Bradley-Terry pairwise model unit test:
-    ```
-    npx tsx scripts/test-pairwise.mjs
-    ```
-    Expected: "SUCCESS: All 4 Bradley-Terry unit tests passed (100%)."
+    Expected: Exits with code 0 and zero TypeScript errors.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] Table: `community_votes` — Unique `(voter_email, project_id)` constraint, IP tracking, 409 Conflict deduplication
-[ ] Table: `project_comments` — Relational discussion comments linked to projects
-[ ] Table: `webhooks` — Event-driven webhook registry with 256-bit secret tokens
-[ ] Route: `POST /api/vote` — RFC 5322 email syntax validation, duplicate vote refusal with HTTP 409
-[ ] Route: `GET /api/vote/results` — Anti-Bandwagon protection masking tallies for visitors and revealing for organizers
-[ ] Page: `app/vote/page.tsx` — Community voting gallery with client-side Fisher-Yates shuffle & voting modal
-[ ] Route: `GET / POST /api/projects/[id]/comments` — Comments API with HTML entity XSS sanitization
-[ ] Page: `app/projects/[id]/page.tsx` — Project details view with live comments and certificate link
-[ ] Page: `app/projects/[id]/certificate/page.tsx` — Cryptographic printable certificate with SHA-256 tamper seal
-[ ] Document: `docs/openapi.json` — OpenAPI 3.0.3 specification covering all platform endpoints
-[ ] Page: `app/api-docs/page.tsx` — Interactive air-gapped OpenAPI 3.0 documentation explorer
-[ ] Endpoints: `app/api/v1/projects`, `tracks`, `leaderboard`, `export/bulk` — Tier 4 REST APIs
-[ ] Utility: `lib/webhooks.ts` & `app/api/webhooks/route.ts` — HMAC-SHA256 signed event webhook dispatcher
-[ ] Widget: `app/embed/gallery/page.tsx` — Responsive embeddable iframe widget for sponsor portals
-[ ] Spec Bonus (+3): `docs/THREAT-MODEL.md` — Detailed threat model document
-[ ] Spec Bonus (+5): `lib/pairwise.ts` — Bradley-Terry MM pairwise judging engine
+[ ] Fix: `app/api/projects/[id]/comments/route.ts` — XSS double-escape bug resolved (tag-strip, not entity-encode)
+[ ] Fix: `app/layout.tsx` — Vote and API Docs nav links added with unique IDs and aria-labels
+[ ] Fix: `app/projects/[id]/page.tsx` — SUMMARY and DESCRIPTION uppercase labels added
+[ ] Fix: `app/projects/page.tsx` — Inner sticky header collision fixed (top-14 z-30)
+[ ] Fix: `app/judge/page.tsx` — Inner sticky header collision fixed (top-14 z-30)
+[ ] Fix: `app/organizer/dashboard/page.tsx` — Inner sticky header collision fixed (top-14 z-30)
+[ ] Docker image rebuilt with all UI/UX fixes applied
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -60,38 +57,56 @@
 
 Test 1 — Files Exist:
 ```
-ls docs/openapi.json docs/THREAT-MODEL.md lib/pairwise.ts lib/webhooks.ts
+dir app\layout.tsx app\projects\[id]\page.tsx app\api\projects\[id]\comments\route.ts
 ```
-✅ Expected: All 4 files exist and are populated.
-❌ If missing: Re-run file generation tool.
+✅ Expected: All 3 files exist with recent timestamps.
+❌ If missing: Re-run file generation.
 
-Test 2 — Environment & Type Safety:
+Test 2 — TypeScript Compilation:
 ```
 npx tsc --noEmit
 ```
-✅ Expected: Exits with code 0 and zero TypeScript errors.
-❌ If errors: Fix typing inconsistencies in Route Handlers.
+✅ Expected: Exits code 0, zero errors.
+❌ If errors: Fix typing inconsistencies.
 
-Test 3 — Standalone Production Build:
-```
-npm run build
-```
-✅ Expected: Next.js builds standalone bundle with code 0.
-❌ If errors: Check Next.js dynamic routing parameters or component imports.
-
-Test 4 — Functional T3 & T4 Verification:
-```
-node scripts/test-t3-t4.mjs
-```
-✅ Expected: 14/14 assertions PASS (voting deduplication 409, anti-bandwagon masking, bulk export, etc.).
-❌ If wrong: Ensure portal container is running on http://localhost:8080.
-
-Test 5 — Acceptance Suite Verification:
+Test 3 — Acceptance Suite:
 ```
 python run.py .dogfood.toml
 ```
-✅ Expected: claimed T1 T2, verified T1 T2 (7/7 PASS).
-❌ If wrong: Check .dogfood.toml routes and session headers.
+✅ Expected: claimed T1 T2, verified T1 T2 (7/7 PASS)
+❌ If wrong: Check `docker compose logs --tail=40 web`
+
+Test 4 — T3/T4 Functional Assertions:
+```
+node scripts/test-t3-t4.mjs
+```
+✅ Expected: 14/14 assertions PASS (100%)
+❌ If wrong: Ensure portal container is running on http://localhost:8080
+
+Test 5 — Visual Checks (navigate the portal at http://localhost:8080):
+
+[ ] Navigate to http://localhost:8080/vote
+    ✅ Expected: Community Voting page loads with "Vote" nav link highlighted in global header
+
+[ ] Navigate to http://localhost:8080/projects/prj_01
+    ✅ Expected: Project detail shows "SUMMARY" label above tagline, "DESCRIPTION" label above dark box
+    ✅ Expected: No duplicate tagline text visible
+
+[ ] Navigate to http://localhost:8080/projects (scroll down)
+    ✅ Expected: Global nav stays fixed at top, projects page inner banner scrolls beneath it without collision
+
+[ ] Post a comment with text "<script>alert('xss')</script>"
+    ✅ Expected: Comment renders as empty string or plain text, NOT as &lt;script&gt; HTML entities
+
+[ ] Open Global Nav on desktop
+    ✅ Expected: Gallery, Submit, Vote, Judge Console, Mission Control, API Docs — all 6 links present
+
+Test 6 — Security Check:
+[ ] Verify .env.local is NOT committed:
+    ```
+    git status --short | grep env
+    ```
+    ✅ Expected: .env.local appears in .gitignore output, NOT in staged files.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 GIT COMMIT
@@ -100,12 +115,14 @@ python run.py .dogfood.toml
 
 ```
 git add .
-git commit -m "Step 12.3: Enterprise Scale — T3 Community, T4 Extensions & Spec Bonuses"
+git commit -m "Step 13: Final UI/UX Polish — XSS fix, nav links, section labels, header z-index"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 13 until:
-[ ] All tests above show ✅
-[ ] Git commit is done
-[ ] You have read do_after_completion.md fully
+✋ PRODUCTION READY — SUBMISSION CHECKLIST:
+[ ] python run.py .dogfood.toml shows "claimed T1 T2, verified T1 T2" ✅
+[ ] node scripts/test-t3-t4.mjs shows 14/14 PASS ✅
+[ ] npx tsc --noEmit shows 0 errors ✅
+[ ] Docker image rebuilt with all fixes ✅
+[ ] Git commit done ✅
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
