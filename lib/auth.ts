@@ -133,6 +133,111 @@ export async function requireRole(
 }
 
 /**
+ * Canonicalizes judge identifiers (e.g. test aliases 'judge_a' / 'judge_b' -> 'jdg_01' / 'jdg_02')
+ */
+export function canonicalJudgeId(judgeIdentifier: string): string {
+  const normalized = judgeIdentifier.trim().toLowerCase();
+  if (normalized === 'judge_a') return 'jdg_01';
+  if (normalized === 'judge_b') return 'jdg_02';
+  return judgeIdentifier.trim();
+}
+
+/**
+ * Role-isolation guard for Judge score endpoints (FIG. 02 Matrix & ARCHITECTURE.md §4.2)
+ * Enforces:
+ * 1. Visitor (unauthenticated) -> HTTP 401 Unauthorized
+ * 2. Participant -> HTTP 403 Forbidden (logs PARTICIPANT_JUDGE_ROUTE_BLOCKED)
+ * 3. Organizer / Admin -> Permitted (HTTP 200)
+ * 4. Judge -> Permitted for own scores, HTTP 403 for peer scores (logs PEER_SCORE_ACCESS_BLOCKED)
+ */
+export async function verifyJudgeScoreAccess(
+  request: Request | NextRequest,
+  targetJudgeId?: string | null
+): Promise<{ user?: SessionUser; errorResponse?: NextResponse }> {
+  const user = await getSessionUser(request);
+
+  // Rule 1: Visitor check (Unauthenticated -> HTTP 401)
+  if (!user.isAuthenticated || !user.userId) {
+    return {
+      errorResponse: NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      ),
+    };
+  }
+
+  // Rule 2: Participant block (T2.participant_blocked check -> HTTP 403)
+  if (user.role === 'participant') {
+    await logAuditViolation(
+      user.userId,
+      'PARTICIPANT_JUDGE_ROUTE_BLOCKED',
+      '/api/judge/scores',
+      403,
+      {
+        http_method: 'GET',
+        path: '/api/judge/scores',
+        actor_role: user.role,
+        blocked_status_code: 403,
+        timestamp_utc: new Date().toISOString(),
+      }
+    );
+    return {
+      errorResponse: NextResponse.json(
+        { error: 'Forbidden: Participants cannot access judge scores' },
+        { status: 403 }
+      ),
+    };
+  }
+
+  // Rule 3: Organizer & Admin bypass (Permitted -> returns user session)
+  if (user.role === 'organizer' || user.role === 'admin') {
+    return { user };
+  }
+
+  // Rule 4: Judge peer isolation (T2.judge_cannot_see_peer_scores check -> HTTP 403)
+  if (user.role === 'judge') {
+    if (targetJudgeId) {
+      const canonicalTarget = canonicalJudgeId(targetJudgeId);
+      const canonicalUser = canonicalJudgeId(user.userId);
+      if (canonicalTarget !== canonicalUser) {
+        console.warn(
+          `[AUDIT] PEER_SCORE_PROBE_BLOCKED: actor=${user.userId}, target=${targetJudgeId}`
+        );
+        await logAuditViolation(
+          user.userId,
+          'PEER_SCORE_ACCESS_BLOCKED',
+          `/api/judge/scores?judge=${targetJudgeId}`,
+          403,
+          {
+            http_method: 'GET',
+            path: '/api/judge/scores',
+            query_params: { judge: targetJudgeId },
+            actor_role: user.role,
+            target_judge_id: targetJudgeId,
+            blocked_status_code: 403,
+            timestamp_utc: new Date().toISOString(),
+          }
+        );
+        return {
+          errorResponse: NextResponse.json(
+            { error: 'Forbidden: Judges cannot access peer ballots' },
+            { status: 403 }
+          ),
+        };
+      }
+    }
+    return { user };
+  }
+
+  return {
+    errorResponse: NextResponse.json(
+      { error: 'Forbidden: Access denied' },
+      { status: 403 }
+    ),
+  };
+}
+
+/**
  * Logs security audit events asynchronously without blocking or failing the request
  */
 export async function logAuditViolation(
@@ -152,3 +257,4 @@ export async function logAuditViolation(
     console.warn('[AUDIT] Failed to record audit log:', err);
   }
 }
+

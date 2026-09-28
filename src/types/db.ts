@@ -113,7 +113,7 @@ export interface AuditLogPayload {
   query_params?: Record<string, string>; // e.g. { judge: 'judge_a' }
   actor_role: UserRole | 'visitor';
   target_judge_id?: string; // Populated when peer-score probe is detected
-  blocked_status_code: 400 | 401 | 403;
+  blocked_status_code?: 400 | 401 | 403;
   user_agent?: string;
   timestamp_utc: string;
 }

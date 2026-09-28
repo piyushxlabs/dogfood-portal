@@ -216,7 +216,38 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - `npx tsc --noEmit` passed with 0 errors.
 - `npm run build` compiled successfully in 2.4s with route `ƒ /projects/new`.
 - Pass
+## Step 8 — Role-Isolated Judging Route Handler
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Implemented role-isolated judging Route Handler in `app/api/judge/scores/route.ts` supporting `GET` and `POST` methods.
+- Enforced FIG. 02 Role-Isolation Matrix: unauthenticated requests return HTTP 401 Unauthorized; participant requests return HTTP 403 Forbidden with audit logging (`PARTICIPANT_JUDGE_ROUTE_BLOCKED`).
+- Implemented peer score probe detection: when a judge passes `?judge=...` targeting another judge (e.g. `?judge=judge_a` requested with `judge_b` credentials), an audit violation (`PEER_SCORE_ACCESS_BLOCKED`) is logged and HTTP 403 Forbidden is returned.
+- Implemented authorized judge own-scores retrieval returning HTTP 200 with ballots, including a defensive fallback to `fixtures.json` for resilience during database cold start.
+- Implemented organizer/admin inspection permission allowing organizers to inspect individual or aggregate ballots.
+- Implemented `POST /api/judge/scores` ballot submission enforcing rubric scoring criteria (functionality 0.40, quality 0.35, innovation 0.25) and upserting into the `scores` table with audit log `JUDGE_SCORE_SUBMITTED`.
+- Added `canonicalJudgeId` and `verifyJudgeScoreAccess` helpers to `lib/auth.ts` matching ARCHITECTURE.md Section 4.2.
+- Created and executed test suite `scripts/test-judge-scores.mjs` verifying all 7 role isolation assertions.
+
+**Files Created:**
+- `app/api/judge/scores/route.ts` — Role-isolated judging Route Handler for GET & POST /api/judge/scores
+- `scripts/test-judge-scores.mjs` — Test suite validating all 7 role-isolation assertions against run.py requirements
+
+**Files Modified:**
+- `lib/auth.ts` — Added canonicalJudgeId and verifyJudgeScoreAccess role-isolation guard
+- `src/types/db.ts` — Made blocked_status_code optional in AuditLogPayload to support non-error audit logs
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `node scripts/test-judge-scores.mjs` executed with exit code 0: all 7 assertions passed (judge_a own scores 200, judge_b peer probe alias 403, judge_b peer probe ID 403, participant blocked 403, unauthenticated 401, organizer inspection 200, judge_a own alias 200).
+- `npx tsc --noEmit` passed with exit code 0.
+- `npm run build` compiled successfully in 2.5s with exit code 0 and generated dynamic route `ƒ /api/judge/scores`.
+- Pass
 ---
+
 
 
 
