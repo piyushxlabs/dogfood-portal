@@ -104,4 +104,32 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - Pass
 ---
 
+## Step 4 — Transactional Fixtures Seeder
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Implemented offline transactional fixtures seeder in `scripts/seed.mjs` ingesting `fixtures.json` inside an atomic `sql.begin()` transaction.
+- Ingested Event (`evt_01`), 8 Tracks, 30 Judges with track assignments, system users (`usr_organizer`, `usr_participant`, `usr_admin`), 40 Teams, team members, 41 Projects (including duplicate `prj_41`), and 3 Rubric criteria.
+- Implemented weighted score evaluation ($S_{ij} = 0.40 \cdot \text{func} + 0.35 \cdot \text{qual} + 0.25 \cdot \text{innov}$) and defensive nullable handling for empty comments (`""` -> `null`).
+- Pre-seeded 4 deterministic test sessions (`org_7f2a`, `jdg_a_91bc`, `jdg_b_44de`, `prt_2e88`) with expiry set to 2028.
+- Configured formatted stdout banner output reporting test login session headers.
+
+**Files Created:**
+- `scripts/seed.mjs` — Transactional fixtures ingestion script with atomic rollback and test session generation
+
+**Files Modified:**
+- `.env.local` — Set FIXTURES_PATH=fixtures.json for root fixtures resolution
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `node --check scripts/seed.mjs` executed with exit code 0.
+- `node scripts/seed.mjs` verified fixture path resolution (`A:\Projects\dogfood\fixtures.json`) and caught database offline status with recovery instructions.
+- `npx tsc --noEmit` passed with exit code 0.
+- Pass
+---
+
+
 

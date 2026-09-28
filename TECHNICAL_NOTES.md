@@ -20,4 +20,11 @@ Dogfood 2026 Hackathon Portal Architectural Decisions
 **Impact:** Clean ingestion and idempotent DDL execution across all 11 tables and 6 indexes without unique constraint conflicts.
 ---
 
+## Step 4 — Atomic Ingestion & Deterministic Test Session Generation
+**Decision:** Wrapped all table truncations and data ingestions in `sql.begin()` and seeded 4 deterministic test session tokens (`org_7f2a`, `jdg_a_91bc`, `jdg_b_44de`, `prt_2e88`) with expiry set to 2028.
+**Reason:** In accordance with ARCHITECTURE.md Section 3.1, the acceptance test suite `run.py` never navigates UI login forms; it attaches pre-seeded authentication headers directly. Atomic transaction ensures either 100% of the fixture entities and sessions are committed or cleanly rolled back.
+**Impact:** `run.py` assertions execute headlessly and deterministically against consistent judge and organizer session tokens.
+---
+
+
 

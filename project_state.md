@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 3: Relational Schema Implementation (scripts/migrate.mjs, lib/db.ts)
+- **Last Completed Step:** Step 4: Transactional Fixtures Seeder (scripts/seed.mjs)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -13,5 +13,6 @@
   - Root fixtures (`fixtures.json`) and test suite (`run.py`) deployed and validated
   - PostgreSQL connection singleton (`lib/db.ts`) with connection pooling and hot-reload preservation
   - Complete idempotent SQL DDL migration runner (`scripts/migrate.mjs`) covering all 11 tables and 6 indexes
-- **Pending Next Step:** Step 4: Transactional Fixtures Seeder (scripts/seed.mjs)
+  - Transactional offline fixtures seeder (`scripts/seed.mjs`) ingesting all 41 projects, 30 judges, 40 teams, and rubric scores with deterministic test sessions
+- **Pending Next Step:** Step 5: Session Authentication Helper & Middleware (lib/auth.ts, middleware.ts)
 - **Known Issues / Blockers:** None.

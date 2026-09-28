@@ -1,21 +1,21 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 3 COMPLETION CHECKLIST
-# Relational Schema Implementation
+# STEP 4 COMPLETION CHECKLIST
+# Transactional Fixtures Seeder
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify existence of database client and migration script:
+[ ] Verify existence of seeder script:
     ```
-    ls -la lib/db.ts scripts/migrate.mjs
+    ls -la scripts/seed.mjs
     ```
-    Expected: Both files exist.
+    Expected: File exists.
 
-[ ] Verify syntax of migration script:
+[ ] Verify syntax of seeder script:
     ```
-    node --check scripts/migrate.mjs
+    node --check scripts/seed.mjs
     ```
-    Expected: No syntax errors (clean exit code 0).
+    Expected: No syntax errors (exit code 0).
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
@@ -26,19 +26,20 @@
     ```
     Expected: 0 errors.
 
-[ ] Run production build verification:
+[ ] Verify seeder script execution / resilience check:
     ```
-    npm run build
+    node scripts/seed.mjs
     ```
-    Expected: "Compiled successfully" with 0 errors.
+    Expected: If database is running, seeds all 41 projects, 30 judges, and 4 test sessions, printing the banner. If offline, cleanly reports connection parameters and recovery instructions without unhandled crash.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `lib/db.ts` — PostgreSQL connection client singleton using postgres.js with pooling and App Router hot-reload persistence
-[ ] File: `scripts/migrate.mjs` — Automated DDL migration runner covering all 11 tables and 6 indexes idempotently
-[ ] Feature: Defensive relational schema accommodating duplicate `prj_41` and nullable comments (`scores.comment TEXT NULL`)
+[ ] File: `scripts/seed.mjs` — Transactional fixtures ingestion script with atomic transaction (`sql.begin()`) and deterministic test session seeding
+[ ] Config: `.env.local` — Updated `FIXTURES_PATH=fixtures.json` to resolve root fixture path by default
+[ ] Feature: Defensive edge-case handling for duplicate `prj_41` and empty review comments (`""` -> `null`)
+[ ] Feature: Deterministic test session accounts (`org_7f2a`, `jdg_a_91bc`, `jdg_b_44de`, `prt_2e88`)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -46,33 +47,27 @@
 
 Test 1 — Files Exist:
 ```
-ls -la lib/db.ts scripts/migrate.mjs
+ls -la scripts/seed.mjs fixtures.json
 ```
-✅ Expected: Both `lib/db.ts` and `scripts/migrate.mjs` appear.
-❌ If missing: Re-generate the missing file according to Step 3 specification.
+✅ Expected: Both `scripts/seed.mjs` and `fixtures.json` appear.
+❌ If missing: Check repository root or copy from docs/.
 
 Test 2 — Syntax & Compilation:
 ```
-node --check scripts/migrate.mjs
+node --check scripts/seed.mjs
 npx tsc --noEmit
 ```
 ✅ Expected: Clean exit 0 for both checks.
-❌ If errors: Check TypeScript types in `src/types/db.ts` or syntax in `lib/db.ts`.
+❌ If errors: Fix syntax or types.
 
-Test 3 — Build Verification:
+Test 3 — Seeder Resilience Check:
 ```
-npm run build
+node scripts/seed.mjs
 ```
-✅ Expected: Next.js standalone build passes cleanly.
-❌ If errors: Fix any import path issues.
+✅ Expected: Correctly loads `fixtures.json` and connects or reports connection diagnostic instructions.
+❌ If unhandled exception: Check path resolution in `scripts/seed.mjs`.
 
-Test 4 — Migration Script Resilience:
-```
-node scripts/migrate.mjs
-```
-✅ Expected: If database is running, all 11 tables created. If offline/unstarted, cleanly reports connection target and recovery instructions without unhandled crash.
-
-Test 5 — Security Check:
+Test 4 — Security Check:
 [ ] Verify .env is in .gitignore
     ```
     Get-Content .gitignore | Select-String "\.env"
@@ -87,11 +82,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 3: Relational Schema Implementation — lib/db.ts and scripts/migrate.mjs"
+git commit -m "Step 4: Transactional Fixtures Seeder — scripts/seed.mjs with deterministic test sessions"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 4 until:
+✋ DO NOT proceed to Step 5 until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully
