@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 4: Transactional Fixtures Seeder (scripts/seed.mjs)
+- **Last Completed Step:** Step 5: Session Authentication Helper & Middleware (lib/auth.ts, middleware.ts)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -14,5 +14,7 @@
   - PostgreSQL connection singleton (`lib/db.ts`) with connection pooling and hot-reload preservation
   - Complete idempotent SQL DDL migration runner (`scripts/migrate.mjs`) covering all 11 tables and 6 indexes
   - Transactional offline fixtures seeder (`scripts/seed.mjs`) ingesting all 41 projects, 30 judges, 40 teams, and rubric scores with deterministic test sessions
-- **Pending Next Step:** Step 5: Session Authentication Helper & Middleware (lib/auth.ts, middleware.ts)
+  - Session authentication helper and role guard (`lib/auth.ts`) enforcing FIG. 02 Role-Isolation Matrix with HTTP 401/403 responses
+  - Next.js App Router middleware (`middleware.ts`) for header forwarding and static asset exclusion
+- **Pending Next Step:** Step 6: Public Gallery Route & RSC Page (T1.gallery - app/projects/page.tsx, app/api/projects/route.ts)
 - **Known Issues / Blockers:** None.

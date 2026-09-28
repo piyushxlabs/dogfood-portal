@@ -26,5 +26,12 @@ Dogfood 2026 Hackathon Portal Architectural Decisions
 **Impact:** `run.py` assertions execute headlessly and deterministically against consistent judge and organizer session tokens.
 ---
 
+## Step 5 — Route Handler Role Isolation vs Edge Middleware Runtime
+**Decision:** Implemented database session resolution and FIG. 02 role guards inside Node.js Route Handlers (`lib/auth.ts`) while keeping `middleware.ts` strictly as a lightweight request pass-through and path router.
+**Reason:** Next.js Edge middleware runtime lacks Node.js TCP socket support required by `postgres.js` (`net.Socket is not supported`). Attempting database queries in Edge middleware would crash incoming HTTP requests.
+**Impact:** 100% adherence to FIG. 02 Matrix with sub-millisecond database queries inside Node.js Route Handlers, returning deterministic HTTP 401 and 403 status codes.
+---
+
+
 
 

@@ -131,5 +131,34 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - Pass
 ---
 
+## Step 5 — Session Authentication Helper & Middleware
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Implemented `lib/auth.ts` providing session extraction (`extractSessionToken`), database session resolution (`getSessionUser`), role guard (`requireRole`), and audit logging (`logAuditViolation`).
+- Implemented FIG. 02 Role-Isolation Matrix: Missing/invalid credentials return HTTP 401 Unauthorized; role mismatches return HTTP 403 Forbidden.
+- Implemented lightweight Next.js App Router `middleware.ts` for path routing and header normalization without Edge TCP socket bottlenecks.
+- Created and executed test suite `scripts/test-auth.mjs` verifying 7 distinct authentication and role-guard scenarios.
+
+**Files Created:**
+- `lib/auth.ts` — Authentication helper, role guard, and audit logger conforming to FIG. 02 Matrix
+- `middleware.ts` — Next.js App Router middleware for path matching and header forwarding
+- `scripts/test-auth.mjs` — Automated verification tests for cookie extraction and role guard status codes
+
+**Files Modified:**
+- None
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `node scripts/test-auth.mjs` executed with exit code 0: all 7 test cases passed (single cookie, multi-cookie, Bearer token, 401 unauth, 403 participant on judge route, 200 judge, 200 organizer).
+- `npx tsc --noEmit` passed with exit code 0.
+- `npm run build` compiled successfully in 3.3s with exit code 0 (including `ƒ Middleware 34 kB`).
+- Pass
+---
+
+
 
 
