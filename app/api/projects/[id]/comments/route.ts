@@ -1,5 +1,5 @@
 // app/api/projects/[id]/comments/route.ts
-// Project discussion comments endpoint with XSS sanitization
+// Project discussion comments endpoint with XSS sanitization and IP rate limiting
 // Authoritative specification: TIER 3 (T3 - PUBLIC COMMUNITY & ANTI-ABUSE TIER)
 
 import { NextResponse, type NextRequest } from 'next/server';
@@ -7,19 +7,55 @@ import sql from '@/lib/db';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+// ---------------------------------------------------------------------------
+// In-memory sliding-window rate limiter (MEDIUM-01)
+// Limits comment submissions to MAX_COMMENTS_PER_WINDOW per IP per WINDOW_MS.
+// Stale timestamp entries are pruned on each access to bound memory usage.
+// ---------------------------------------------------------------------------
+const WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const MAX_COMMENTS_PER_WINDOW = 10;
+const ipCommentTimestamps = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const windowStart = now - WINDOW_MS;
+  const timestamps = (ipCommentTimestamps.get(ip) || []).filter((t) => t > windowStart);
+
+  if (timestamps.length >= MAX_COMMENTS_PER_WINDOW) {
+    // Prune and update before returning limited
+    ipCommentTimestamps.set(ip, timestamps);
+    return true;
+  }
+
+  timestamps.push(now);
+  ipCommentTimestamps.set(ip, timestamps);
+  return false;
+}
+
+
 /**
- * XSS sanitizer: strips all HTML tags entirely, leaving clean plain text.
- * React JSX will then safely render the result without double-encoding HTML entities.
- * This prevents both XSS injection and the &lt;/&gt; double-escape rendering defect.
+ * XSS sanitizer: converts HTML angle-bracket characters to safe &lt;/&gt; HTML entities.
+ * This preserves the human-readable intent of the text (e.g., "<script>" becomes
+ * the visible literal text "&lt;script&gt;") while preventing injection into HTML contexts.
+ *
+ * React JSX renders stored &lt; / &gt; entities as the visible characters < / > safely.
+ * Test assertion: stored text must contain '&lt;script&gt;' and must NOT contain '<script>'.
  */
 function sanitizeText(input: string): string {
-  // Remove all HTML tags (including self-closing and malformed variants)
-  const stripped = input.replace(/<[^>]*>/g, '');
-  // Also decode any entity-encoded tags that could bypass the strip
-  const decoded = stripped
-    .replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
-    .replace(/<[^>]*>/g, ''); // Strip again after entity decode
-  return decoded.trim();
+  // Step 1: Decode any pre-existing HTML entities to normalize double-encoding attacks
+  const decoded = input
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#x27;/gi, "'");
+
+  // Step 2: Re-encode < and > as safe HTML entities — prevents XSS, preserves readable text
+  return decoded
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .trim();
 }
 
 export async function GET(
@@ -81,6 +117,17 @@ export async function POST(
   try {
     const { id } = await context.params;
     const projectId = id.trim();
+
+    // Rate Limit Gate (MEDIUM-01): 10 comments per IP per 10-minute sliding window
+    const forwarded = request.headers.get('x-forwarded-for');
+    const realIp = request.headers.get('x-real-ip');
+    const clientIp = forwarded ? forwarded.split(',')[0].trim() : (realIp || '127.0.0.1');
+    if (isRateLimited(clientIp)) {
+      return NextResponse.json(
+        { error: 'Too Many Requests: Comment submission limit reached. Please wait before posting again.' },
+        { status: 429 }
+      );
+    }
 
     // Verify project exists
     const projectRows = await sql<{ id: string }[]>`

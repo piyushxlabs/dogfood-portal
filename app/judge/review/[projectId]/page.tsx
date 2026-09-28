@@ -214,7 +214,12 @@ export default async function JudgeReviewPage({ params }: PageProps) {
   }
 
   const { projectId } = await params;
-  const currentJudgeId = user.userId || 'jdg_01';
+  // CRITICAL-01: Never silently attribute ballots to a default judge ID.
+  // If the session is authenticated but userId is somehow null, bail immediately.
+  if (!user.userId) {
+    notFound();
+  }
+  const currentJudgeId = user.userId!;  // Non-null: guarded above
   const { project, projectIds, initialScore } = await getProjectReviewData(
     projectId,
     currentJudgeId
@@ -238,7 +243,7 @@ export default async function JudgeReviewPage({ params }: PageProps) {
                 Judge Speed Console
               </span>
               <span className="text-[11px] text-zinc-500 font-mono block">
-                Sample Hack 2026 • Unit DF-01
+                Dogfood 2026 • Unit DF-01
               </span>
             </div>
           </div>

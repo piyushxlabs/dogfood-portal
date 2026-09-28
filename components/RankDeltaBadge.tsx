@@ -40,11 +40,10 @@ export function RankDeltaBadge({ delta, className = '', id }: RankDeltaBadgeProp
   return (
     <span
       id={id}
-      className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-zinc-800 text-zinc-400 border border-zinc-700/60 ${className}`}
-      title="Rank unchanged"
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-zinc-800/80 text-zinc-500 border border-zinc-700/50 ${className}`}
+      title="Rank unchanged post-calibration"
     >
       <span>—</span>
-      <span>0</span>
     </span>
   );
 }

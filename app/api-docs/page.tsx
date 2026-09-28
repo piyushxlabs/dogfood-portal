@@ -20,9 +20,23 @@ interface OpenApiDoc {
 }
 
 async function getOpenApiSpec(): Promise<OpenApiDoc> {
-  const filePath = path.resolve(process.cwd(), 'docs', 'openapi.json');
-  const raw = await fs.readFile(filePath, 'utf8');
-  return JSON.parse(raw);
+  try {
+    const filePath = path.resolve(process.cwd(), 'docs', 'openapi.json');
+    const raw = await fs.readFile(filePath, 'utf8');
+    return JSON.parse(raw);
+  } catch (err) {
+    console.warn('[API-DOCS] Failed to load openapi.json, using fallback stub:', err);
+    return {
+      openapi: '3.0.3',
+      info: {
+        title: 'Dogfood 2026 Hackathon Portal API',
+        version: '1.0.0',
+        description: 'Air-gapped OpenAPI specification. Spec file temporarily unavailable — container may still be initializing.',
+      },
+      tags: [],
+      paths: {},
+    };
+  }
 }
 
 export const metadata = {

@@ -11,18 +11,22 @@ export const revalidate = 0;
 
 /**
  * Escapes a CSV field in compliance with RFC 4180 and sanitizes against formula injection.
- * Prepends ' to text fields starting with =, +, -, or @.
- * Wraps values containing commas, quotes, or newlines in double quotes.
+ * - Null/undefined → empty string
+ * - Numbers → raw string representation (numeric types cannot invoke spreadsheet formula engines)
+ * - Strings starting with =, +, -, or @ → prepended with ' to neutralize injection
+ * - Values containing commas, quotes, or newlines → wrapped in double-quotes per RFC 4180
  */
-function escapeCsvField(val: string | number): string {
-  let str = String(val ?? '');
+function escapeCsvField(val: string | number | null | undefined): string {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'number') return String(val);
+  let str = String(val);
 
   // Formula injection prevention: sanitize text fields starting with formula trigger characters
-  if (typeof val === 'string' && /^[=+\-@]/.test(str)) {
+  if (/^[=+\-@]/.test(str)) {
     str = `'${str}`;
   }
 
-  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+  if (/[",\n\r]/.test(str)) {
     return `"${str.replace(/"/g, '""')}"`;
   }
   return str;
@@ -33,15 +37,15 @@ function escapeCsvField(val: string | number): string {
  */
 function formatCsvRow(row: LeaderboardRow): string {
   const fields = [
-    row.rank,
+    escapeCsvField(row.rank),
     escapeCsvField(row.project_id),
     escapeCsvField(row.project_title),
     escapeCsvField(row.track_name),
     escapeCsvField(row.team_name),
-    row.reviews_count,
-    row.raw_average_score.toFixed(2),
-    row.normalized_score.toFixed(2),
-    row.rank_delta,
+    escapeCsvField(row.reviews_count),
+    escapeCsvField(row.raw_average_score.toFixed(2)),
+    escapeCsvField(row.normalized_score.toFixed(2)),
+    escapeCsvField(row.rank_delta),   // Explicit: numeric deltas (-6, +4, 0) are safe numbers
   ];
   return fields.join(',');
 }

@@ -182,19 +182,39 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
             {project.title}
           </h1>
 
-          <p className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">SUMMARY</p>
-          <p className="text-base text-zinc-300 leading-relaxed mb-6 font-normal">
-            {project.summary}
-          </p>
+          {/* Determine if description adds new content beyond summary */}
+          {(() => {
+            const hasUniqueDescription =
+              project.description &&
+              project.description.trim().length > 0 &&
+              project.description.trim() !== project.summary.trim();
 
-          {project.description && (
-            <div className="mb-6">
-              <p className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">DESCRIPTION</p>
-              <div className="p-4 bg-zinc-950/60 rounded-xl border border-zinc-800/80 text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
-                {project.description}
-              </div>
-            </div>
-          )}
+            if (hasUniqueDescription) {
+              return (
+                <>
+                  <p className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">SUMMARY</p>
+                  <p className="text-base text-zinc-300 leading-relaxed mb-6 font-normal">
+                    {project.summary}
+                  </p>
+                  <div className="mb-6">
+                    <p className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">DESCRIPTION</p>
+                    <div className="p-4 bg-zinc-950/60 rounded-xl border border-zinc-800/80 text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                      {project.description}
+                    </div>
+                  </div>
+                </>
+              );
+            }
+
+            return (
+              <>
+                <p className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">PROJECT OVERVIEW</p>
+                <p className="text-base text-zinc-300 leading-relaxed mb-6 font-normal">
+                  {project.summary}
+                </p>
+              </>
+            );
+          })()}
 
           {/* Links Row */}
           <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-zinc-800/80">

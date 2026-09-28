@@ -8,6 +8,7 @@ import sql from '@/lib/db';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { getServerSessionUser } from '@/lib/auth';
+import { notFound } from 'next/navigation';
 import { AuthPromptCard } from '@/components/AuthPromptCard';
 import {
   Trophy,
@@ -120,7 +121,11 @@ export default async function JudgeHubPage() {
     );
   }
 
-  const judgeId = user.userId || 'jdg_01';
+  // CRITICAL-01: Never silently attribute ballot data to a default judge ID.
+  if (!user.userId) {
+    notFound();
+  }
+  const judgeId = user.userId!;  // Non-null: guarded above
   const projects = await getJudgeDashboardData(judgeId);
   const completedCount = projects.filter((p) => p.has_score).length;
   const pendingCount = projects.length - completedCount;
