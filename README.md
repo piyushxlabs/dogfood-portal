@@ -1,4 +1,4 @@
-﻿# Dogfood 2026 · Autonomous Air-Gapped Hackathon Platform
+# Dogfood 2026 · Autonomous Air-Gapped Hackathon Platform
 
 > **Grand Prize Submission | 100% Offline Standalone Architecture | Verified T1–T4 Spec Compliance**
 
@@ -11,15 +11,14 @@
 
 ---
 
-## 📺 Live Video Demonstration (3:15)
+## 📺 Demo Video
 
-Click below to watch the continuous, unedited end-to-end walkthrough verifying Docker health, temporal invariants, rubric evaluation, role-isolation boundaries, and dynamic mathematical ranking:
+[![Dogfood 2026 System Walkthrough](public/assets/demo-preview.svg)](https://youtu.be/Q2cXrVs5VvI)
 
-[![Dogfood 2026 System Walkthrough](public/assets/demo-preview.svg)](https://youtu.be/REPLACE_WITH_YOUR_VIDEO_ID)
+[https://youtu.be/Q2cXrVs5VvI](https://youtu.be/Q2cXrVs5VvI)
 
-> 🔗 **Direct Video URL:** [https://youtu.be/REPLACE_WITH_YOUR_VIDEO_ID](https://youtu.be/REPLACE_WITH_YOUR_VIDEO_ID)
->
-> *Covers: Docker acceptance suite · Public Gallery search · Judge split-screen rubric console · FIG. 02 peer isolation boundaries · Organizer Mission Control variance reduction · Tier 3/4 extensions (voting, certificates, webhooks, embedded gallery)*
+> 🔗 **Continuous End-to-End Walkthrough (3:15):** Docker acceptance suite · Public Gallery search · Judge split-screen rubric console · FIG. 02 peer isolation boundaries · Organizer Mission Control variance reduction · Tier 3/4 extensions (voting, certificates, webhooks, embedded gallery).
+
 
 ---
 
