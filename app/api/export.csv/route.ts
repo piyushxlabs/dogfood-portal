@@ -10,11 +10,18 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 /**
- * Escapes a CSV field in compliance with RFC 4180.
+ * Escapes a CSV field in compliance with RFC 4180 and sanitizes against formula injection.
+ * Prepends ' to text fields starting with =, +, -, or @.
  * Wraps values containing commas, quotes, or newlines in double quotes.
  */
 function escapeCsvField(val: string | number): string {
-  const str = String(val ?? '');
+  let str = String(val ?? '');
+
+  // Formula injection prevention: sanitize text fields starting with formula trigger characters
+  if (typeof val === 'string' && /^[=+\-@]/.test(str)) {
+    str = `'${str}`;
+  }
+
   if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
     return `"${str.replace(/"/g, '""')}"`;
   }

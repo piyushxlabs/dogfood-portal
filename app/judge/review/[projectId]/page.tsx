@@ -44,7 +44,10 @@ interface FixtureData {
   }[];
 }
 
-async function loadFallbackData(projectId: string): Promise<{
+async function loadFallbackData(
+  projectId: string,
+  currentJudgeId: string
+): Promise<{
   project: ProjectDetail | null;
   projectIds: string[];
   initialScore: ExistingScore | null;
@@ -81,9 +84,9 @@ async function loadFallbackData(projectId: string): Promise<{
           submitted_at: targetP.submitted_at,
         };
 
-        // Check if there is an existing score in fixtures for jdg_01 (judge_a)
+        // Check if there is an existing score in fixtures strictly for currentJudgeId
         const scoreMatch = (data.scores || []).find(
-          (s) => s.project === projectId && s.judge === 'jdg_01'
+          (s) => s.project === projectId && s.judge === currentJudgeId
         );
 
         const initialScore: ExistingScore | null = scoreMatch
@@ -105,7 +108,10 @@ async function loadFallbackData(projectId: string): Promise<{
   return { project: null, projectIds: [], initialScore: null };
 }
 
-async function getProjectReviewData(projectId: string): Promise<{
+async function getProjectReviewData(
+  projectId: string,
+  currentJudgeId: string
+): Promise<{
   project: ProjectDetail | null;
   projectIds: string[];
   initialScore: ExistingScore | null;
@@ -154,7 +160,7 @@ async function getProjectReviewData(projectId: string): Promise<{
             : target.submitted_at.toISOString(),
       };
 
-      // Check existing score in database
+      // Check existing score in database strictly for currentJudgeId
       const existingScores = await sql<
         {
           raw_criteria: { functionality?: number; quality?: number; innovation?: number };
@@ -163,7 +169,7 @@ async function getProjectReviewData(projectId: string): Promise<{
       >`
         SELECT raw_criteria, comment
         FROM scores
-        WHERE project_id = ${projectId} AND judge_id = 'jdg_01'
+        WHERE project_id = ${projectId} AND judge_id = ${currentJudgeId}
         LIMIT 1;
       `;
 
@@ -184,7 +190,7 @@ async function getProjectReviewData(projectId: string): Promise<{
     console.warn('[JUDGE_REVIEW] Database query failed, using fixture fallback:', err);
   }
 
-  return loadFallbackData(projectId);
+  return loadFallbackData(projectId, currentJudgeId);
 }
 
 export default async function JudgeReviewPage({ params }: PageProps) {
@@ -208,7 +214,11 @@ export default async function JudgeReviewPage({ params }: PageProps) {
   }
 
   const { projectId } = await params;
-  const { project, projectIds, initialScore } = await getProjectReviewData(projectId);
+  const currentJudgeId = user.userId || 'jdg_01';
+  const { project, projectIds, initialScore } = await getProjectReviewData(
+    projectId,
+    currentJudgeId
+  );
 
   if (!project) {
     notFound();

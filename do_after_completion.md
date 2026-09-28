@@ -1,9 +1,15 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 12.1 COMPLETION CHECKLIST
-# Production Hardening & Graceful Session Access Control
+# STEP 12.2 COMPLETION CHECKLIST
+# Audit Remediation Blueprint (Phases A through E)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
+
+[ ] Run the official acceptance test suite:
+    ```
+    python run.py .dogfood.toml
+    ```
+    Expected: `claimed T1 T2, verified T1 T2` with exit code 0.
 
 [ ] Run the comprehensive 10-checkpoint HTTP verification script:
     ```
@@ -11,35 +17,33 @@
     ```
     Expected: `[VERIFY-ALL] ALL 10/10 END-TO-END CHECKPOINTS PASSED SUCCESSFULLY!`
 
-[ ] Verify the official acceptance test suite passes 100%:
+[ ] Run the statistical normalization invariant test:
     ```
-    python run.py .dogfood.toml
+    node scripts/test-normalization.mjs
     ```
-    Expected: `claimed T1 T2, verified T1 T2` with exit code 0.
+    Expected: `[TEST-NORMALIZATION] ALL 5 STATISTICAL & MATHEMATICAL TESTS PASSED.`
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Open http://localhost:8080/judge in your browser without cookies:
-    Expected: Clean dark-mode "Judge Session Required" card with 1-click test login buttons (`Judge A`, `Judge B`, `Organizer`). No Next.js digest error.
+[ ] Open http://localhost:8080/projects/new in your browser:
+    Expected: Rich dark-mode submission UI with "Submissions Closed for This Event" banner, read-only form, and a red "Test Late Submission (Triggers 400)" button. Clicking the button pops up the red toast "HTTP 400 Bad Request".
 
-[ ] Open http://localhost:8080/organizer/dashboard in your browser without cookies:
-    Expected: Clean dark-mode "Organizer Session Required" card with 1-click `Activate Organizer Session (org_7f2a)` button.
+[ ] Open http://localhost:8080/organizer/dashboard as Organizer:
+    Expected: Click "Just now" refresh button on Calibrated Final Standings to test live auto-refresh against `/api/organizer/leaderboard`. Observe clean reload without page jumps.
 
-[ ] Test the floating Persona Switcher in the top right of the navbar:
-    Expected: Click any persona (`Visitor`, `Judge A`, `Judge B`, `Organizer`) to instantly switch active session cookie and reload the page.
+[ ] Check top navigation bar:
+    Expected: Sticky header with links (`Gallery`, `Submit`, `Judge Console`, `Mission Control`) and docked `Persona Switcher` on the far right with clean flex spacing and zero visual collisions.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `components/AuthPromptCard.tsx` — Dark-mode session prompt card with 1-click test login buttons
-[ ] File: `components/PersonaSwitcher.tsx` — Global floating navbar badge for 1-click test persona switching
-[ ] File: `app/error.tsx` — Global React error boundary with dark-mode recovery UI and "Return to Gallery" action
-[ ] File: `app/not-found.tsx` — Air-gapped 404 page with return-to-gallery navigation
-[ ] File: `scripts/verify-all-checkpoints.mjs` — Programmatic 10-checkpoint test suite validating all user flows
-[ ] Feature: Defensive numeric formatting — Fixed PostgreSQL decimal string conversion before `.toFixed(2)` in `app/judge/page.tsx`
-[ ] Feature: Server Session Helper — `getServerSessionUser()` in `lib/auth.ts` for safe cookie resolution in Server Components
+[ ] Phase A: Scoped ballot retrieval in `app/judge/review/[projectId]/page.tsx` dynamically to active judge session (`currentJudgeId`).
+[ ] Phase B: Deleted `FIXTURE_BENCHMARKS` from `lib/normalization.ts`. Enforced 100% pure mathematical calculation and dynamic variance reduction without static fallbacks. Defensively cast PostgreSQL numeric values.
+[ ] Phase C: Implemented real role-isolated organizer APIs (`app/api/organizer/leaderboard/route.ts`, `app/api/organizer/judge-status/route.ts`, `app/api/organizer/calibration-summary/route.ts`). Connected `components/NormalizedLeaderboard.tsx` auto-refresh to live API.
+[ ] Phase D: Implemented interactive read-only submission UI on `GET /projects/new` (with "Deadline Closed" alert banner and late test button) while preserving `POST /projects/new` for `run.py`. Added `app/global-error.tsx`. Integrated `PersonaSwitcher` into sticky navigation header in `app/layout.tsx`.
+[ ] Phase E: Replaced synchronous `fs.readFileSync` with `await fs.promises.readFile` across `app/projects/page.tsx` and `app/api/projects/route.ts`. Added formula injection sanitization in `app/api/export.csv/route.ts` prepending `'` to text fields starting with `=`, `+`, `-`, or `@`.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -47,10 +51,10 @@
 
 Test 1 — Files Exist:
 ```
-dir /b app\error.tsx app\not-found.tsx components\AuthPromptCard.tsx components\PersonaSwitcher.tsx scripts\verify-all-checkpoints.mjs
+dir /b app\global-error.tsx app\api\organizer\leaderboard\route.ts app\api\organizer\judge-status\route.ts app\api\organizer\calibration-summary\route.ts
 ```
-✅ Expected: All 5 files are listed.
-❌ If missing: Check repository root and restore from git.
+✅ Expected: All 4 files are listed.
+❌ If missing: Restore or re-create missing routes.
 
 Test 2 — Full Checkpoint Verification:
 ```
@@ -87,7 +91,7 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 12.1: Production Hardening — graceful session cards, persona switcher, error boundary, and full checkpoint suite"
+git commit -m "Step 12.2: Audit Remediation — dynamic math, scoped ballots, organizer APIs, and formula sanitization"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

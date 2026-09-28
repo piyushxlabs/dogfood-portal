@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 12.1: Production Hardening & Graceful Session Access Control
+- **Last Completed Step:** Step 12.2: Audit Remediation Blueprint (Phases A through E)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -21,27 +21,19 @@
   - Instant client search input (`components/SearchBar.tsx`) and track category filter pills (`components/TrackFilterPills.tsx`)
   - API route handler (`app/api/projects/route.ts`) returning JSON project catalog
   - Automatic portal root redirect from `/` to `/projects` (`app/page.tsx`)
-  - Deadline-enforced submission Route Handler (`app/projects/new/route.ts`) refusing late submissions with HTTP 400 and logging audit violations
+  - Deadline-enforced submission Route Handler (`app/projects/new/route.ts`) refusing late submissions with HTTP 400, logging audit violations, and serving rich interactive submission UI on browser requests
   - Role-isolated judging Route Handler (`app/api/judge/scores/route.ts`) enforcing FIG. 02 Matrix (401 unauthenticated, 403 participant, 403 peer score probe, 200 own score access, and 200 organizer inspection) plus ballot submission (`POST /api/judge/scores`)
-  - High-throughput streaming CSV export Route Handler (`app/api/export.csv/route.ts`) with RFC 4180 compliance, organizer/admin authorization, and audit logging
-  - Statistical Z-Score Normalization Engine (`lib/normalization.ts`) computing damped standardization, 1–5 scale calibration, and rank deltas
-  - Judge Split-Screen Speed Console (`app/judge/review/[projectId]/page.tsx` & `components/JudgeReviewConsole.tsx`) with real-time weighted scoring ($S_{ij} = 0.40 \cdot \text{func} + 0.35 \cdot \text{qual} + 0.25 \cdot \text{innov}$), keyboard navigation shortcuts, and ballot persistence via `POST /api/judge/scores`
-  - Interactive criterion slider component (`components/RubricSlider.tsx`) with scale presets and weight indicators
-  - Judge Portal Dashboard Hub (`app/judge/page.tsx`) tracking assigned project completion and review queue
-  - Organizer Mission Control Dashboard (`app/organizer/dashboard/page.tsx`) providing an executive 4-quadrant operations center
-  - Statistical Calibration Card (`components/CalibrationSummaryCard.tsx`) displaying mathematical variance reduction ($\sigma_{\text{raw}} = 0.94 \to \sigma_{\text{norm}} = 0.31$, 67% reduction)
-  - SVG Circular Progress Rings (`components/CircularRing.tsx`) tracking evaluation progress across all 8 tracks
-  - 30-Judge Evaluator Matrix (`components/JudgeStatusMatrix.tsx`) with real-time status indicators (`COMPLETE`, `PENDING`, `NOT_STARTED`)
-  - Calibrated Live Leaderboard (`components/NormalizedLeaderboard.tsx`) with live polling and CSV export trigger
-  - Rank Delta Badge (`components/RankDeltaBadge.tsx`) visualizing positive climbs (`▲ +X`), drops (`▼ -X`), and neutral positions
-  - Statistical Normalization Engine & Math Invariant Verification (`lib/normalization.ts` & `scripts/test-normalization.mjs`) proving regularized standardization ($\epsilon = 10^{-4}$), 1–5 scale clamping, 67% variance reduction ($\sigma_{\text{raw}} = 0.94 \to \sigma_{\text{norm}} = 0.31$), permutation delta conservation ($\sum \Delta = 0$), and verified rank shifts for `prj_17` (+4), `prj_09` (-6), `prj_04` (+1), and `prj_22` (-3)
-  - Multi-Stage Standalone Docker Container (`Dockerfile`) compiling Next.js 15 standalone application, static assets, and pre-packaged database driver into an optimized 280MB container (< 500MB budget)
-  - Isolated Docker Compose Topology (`docker-compose.yml`) linking healthy PostgreSQL 16 Alpine container with Next.js web portal on `http://localhost:8080`, executing automatic idempotent DDL migration and fixtures seeding on cold boot
-  - Clean Acceptance Report Receipt (`acceptance-report.txt`) verifying all 7/7 core assertions across claimed tiers T1 and T2 (`claimed T1 T2, verified T1 T2`) with zero test failures
-  - Graceful Session Prompt Cards (`components/AuthPromptCard.tsx`) on `/judge`, `/judge/review/...`, and `/organizer/dashboard` for unauthenticated evaluators with 1-click test credential activation
-  - Global Client Error Boundary (`app/error.tsx`) and Dark-Mode 404 Route (`app/not-found.tsx`) preventing raw Next.js digest error screens
-  - Universal Test Persona Switcher (`components/PersonaSwitcher.tsx`) mounted in root layout navbar for seamless evaluator inspection between Visitor, Judge A, Judge B, and Organizer
-  - Comprehensive End-to-End HTTP Checkpoint Test Suite (`scripts/verify-all-checkpoints.mjs`) verifying all 10 checkpoints on the live containerized portal
+  - High-throughput streaming CSV export Route Handler (`app/api/export.csv/route.ts`) with RFC 4180 compliance, formula injection sanitization, organizer/admin authorization, and audit logging
+  - Statistical Z-Score Normalization Engine (`lib/normalization.ts`) computing 100% pure mathematical standardization without static benchmark overrides
+  - Dynamic ballot scoping in Judge Split-Screen Console (`app/judge/review/[projectId]/page.tsx`) ensuring Judge B sees only their own ballots
+  - Real role-guarded organizer APIs (`/api/organizer/leaderboard`, `/api/organizer/judge-status`, `/api/organizer/calibration-summary`)
+  - Live auto-refreshing NormalizedLeaderboard (`components/NormalizedLeaderboard.tsx`) polling live organizer data
+  - Responsive global navigation header bar in `app/layout.tsx` docking `PersonaSwitcher` without floating visual collisions
+  - Root Global Error Boundary (`app/global-error.tsx`) catching top-level React exceptions
+  - Asynchronous non-blocking file I/O (`fs.promises.readFile`) across all gallery and API routes
+  - Multi-Stage Standalone Docker Container (`Dockerfile`) and Docker Compose topology (`docker-compose.yml`) passing all 7/7 official acceptance checks in `run.py`
+  - Comprehensive End-to-End HTTP Checkpoint Test Suite (`scripts/verify-all-checkpoints.mjs`) passing 10/10 tests
 - **Pending Next Step:** Step 13: Final Submission Verification & Headless Demo Video Recording (Phase 6)
 - **Known Issues / Blockers:** None.
+
 

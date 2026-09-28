@@ -31,10 +31,20 @@ export function NormalizedLeaderboard({ initialLeaderboard }: NormalizedLeaderbo
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      // Re-fetch project rankings from API
-      const res = await fetch('/api/projects');
+      // Re-fetch calibrated leaderboard from real organizer API
+      const res = await fetch('/api/organizer/leaderboard');
       if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.leaderboard) && data.leaderboard.length > 0) {
+          setLeaderboard(data.leaderboard);
+        }
         setLastRefreshed(new Date().toLocaleTimeString());
+      } else {
+        // Fallback if accessed in demo mode without organizer cookie
+        const fallbackRes = await fetch('/api/projects');
+        if (fallbackRes.ok) {
+          setLastRefreshed(new Date().toLocaleTimeString());
+        }
       }
     } catch (err) {
       console.warn('[LEADERBOARD] Auto-refresh fetch failed:', err);

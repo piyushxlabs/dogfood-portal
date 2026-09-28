@@ -3,21 +3,36 @@
 // Authoritative specification: ARCHITECTURE.md §2 & DATA-MODEL.md §3
 
 import { NextResponse } from 'next/server';
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import sql from '@/lib/db';
 
-function loadFallbackProjects() {
+interface FixtureProject {
+  id: string;
+  title: string;
+  summary: string;
+  track: string;
+  team: string;
+  repo_url: string;
+  submitted_at: string;
+}
+
+async function loadFallbackProjects() {
   try {
     const candidatePaths = [
+      process.env.FIXTURES_PATH,
       path.resolve(process.cwd(), 'fixtures.json'),
       path.resolve(process.cwd(), 'docs', 'fixtures.json'),
-    ];
+      '/app/fixtures.json',
+    ].filter((p): p is string => Boolean(p));
+
     let raw = '';
     for (const p of candidatePaths) {
-      if (fs.existsSync(p)) {
-        raw = fs.readFileSync(p, 'utf8');
+      try {
+        raw = await fs.readFile(p, 'utf8');
         break;
+      } catch {
+        // try next candidate path
       }
     }
     if (!raw) return [];
@@ -33,7 +48,7 @@ function loadFallbackProjects() {
       teamMap.set(tm.id, tm.name);
     });
 
-    return (data.projects || []).map((p: any) => ({
+    return (data.projects || []).map((p: FixtureProject) => ({
       id: p.id,
       title: p.title,
       summary: p.summary,
@@ -79,7 +94,7 @@ export async function GET() {
     console.warn('[API/PROJECTS] Database query bypassed or offline; using local fixtures fallback:', err);
   }
 
-  const fallback = loadFallbackProjects();
+  const fallback = await loadFallbackProjects();
   return NextResponse.json({
     projects: fallback,
     count: fallback.length,

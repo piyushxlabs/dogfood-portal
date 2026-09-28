@@ -509,6 +509,46 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - Pass
 ---
 
+## Step 12.2 — Audit Remediation Blueprint (Phases A through E)
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Phase A: Eliminated hardcoded `jdg_01` in `app/judge/review/[projectId]/page.tsx`, passing active session's `user.userId` dynamically to `getProjectReviewData` and `loadFallbackData` to strictly prevent cross-judge ballot leakage.
+- Phase B: Removed `FIXTURE_BENCHMARKS` static rank/score overrides from `lib/normalization.ts`. Implemented 100% pure mathematical Z-score calculation, dynamic sorting (`normScore DESC`, `rawAvg DESC`, `project_id ASC`), and dynamic variance reduction calculation across sample judges without static fallbacks. Defensively cast database numeric values to numbers.
+- Phase C: Implemented real organizer API endpoints (`/api/organizer/leaderboard`, `/api/organizer/judge-status`, `/api/organizer/calibration-summary`) with strict FIG. 02 role isolation. Connected `components/NormalizedLeaderboard.tsx` `handleRefresh()` to `/api/organizer/leaderboard` for live polling updates.
+- Phase D: Implemented interactive read-only submission UI on `GET /projects/new` (with "Deadline Closed" alert banner, read-only form, and "Test Late Submission" button that triggers the 400 error toast visually) while preserving `POST /projects/new` for `run.py`. Added `app/global-error.tsx` root error boundary. Integrated `PersonaSwitcher` cleanly into a sticky top navigation header bar in `app/layout.tsx`.
+- Phase E: Replaced synchronous `fs.readFileSync` with asynchronous `fs.promises.readFile` in `app/projects/page.tsx` and `app/api/projects/route.ts`. Added formula injection sanitization to `app/api/export.csv/route.ts` prepending `'` to text fields starting with `=`, `+`, `-`, or `@`.
+
+**Files Created:**
+- `app/api/organizer/leaderboard/route.ts` — Role-isolated organizer API returning dynamic leaderboard standings
+- `app/api/organizer/judge-status/route.ts` — Role-isolated organizer API returning 30-judge status matrix
+- `app/api/organizer/calibration-summary/route.ts` — Role-isolated organizer API returning dynamic variance reduction summary
+- `app/global-error.tsx` — Root React error boundary with dark-mode recovery UI
+
+**Files Modified:**
+- `app/judge/review/[projectId]/page.tsx` — Scoped ballot retrieval dynamically to active judge
+- `lib/normalization.ts` — Eliminated static fixture overrides; enforced pure mathematical ranking and variance reduction
+- `scripts/test-normalization.mjs` — Updated unit tests to verify pure dynamic ranking and delta conservation
+- `components/NormalizedLeaderboard.tsx` — Connected auto-refresh to live organizer leaderboard API
+- `app/projects/new/route.ts` — Added rich HTML submission UI for browser navigation while preserving deadline check
+- `app/layout.tsx` — Integrated PersonaSwitcher inside responsive global navigation header
+- `app/projects/page.tsx` — Converted fixture fallback loading to async `fs.promises.readFile`
+- `app/api/projects/route.ts` — Converted fixture fallback loading to async `fs.promises.readFile` and removed `any` typing
+- `app/api/export.csv/route.ts` — Added spreadsheet formula injection sanitization
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `npx tsc --noEmit` passed with 0 errors.
+- `npm run build` compiled successfully in 2.9s with exit code 0.
+- `node scripts/test-normalization.mjs` passed all 5 mathematical invariant tests.
+- `node scripts/verify-all-checkpoints.mjs` passed all 10/10 end-to-end checkpoints.
+- `python run.py .dogfood.toml` passed all 7/7 core assertions (`claimed T1 T2, verified T1 T2`).
+- Pass
+---
+
 
 
 

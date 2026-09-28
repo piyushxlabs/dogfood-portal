@@ -3,7 +3,7 @@
 // Authoritative specification: SYSTEM_SCOPE_AND_BEHAVIOR.md §3 & ARCHITECTURE.md §2
 
 import React from 'react';
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import sql from '@/lib/db';
 import { GalleryClient, type TrackData } from '@/components/GalleryClient';
@@ -16,17 +16,22 @@ export const metadata = {
 };
 
 // Defensive fallback to fixtures.json ensures zero 500 errors during container cold boots
-function loadFallbackData(): { projects: ProjectCardData[]; tracks: TrackData[] } {
+async function loadFallbackData(): Promise<{ projects: ProjectCardData[]; tracks: TrackData[] }> {
   try {
     const fixturePaths = [
+      process.env.FIXTURES_PATH,
       path.resolve(process.cwd(), 'fixtures.json'),
       path.resolve(process.cwd(), 'docs', 'fixtures.json'),
-    ];
+      '/app/fixtures.json',
+    ].filter((p): p is string => Boolean(p));
+
     let raw = '';
     for (const p of fixturePaths) {
-      if (fs.existsSync(p)) {
-        raw = fs.readFileSync(p, 'utf8');
+      try {
+        raw = await fs.readFile(p, 'utf8');
         break;
+      } catch {
+        // try next candidate path
       }
     }
     if (!raw) return { projects: [], tracks: [] };
