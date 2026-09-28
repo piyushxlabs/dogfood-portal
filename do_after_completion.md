@@ -1,91 +1,90 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 10D COMPLETION CHECKLIST
-# Statistical Normalization Engine (TypeScript)
+# STEP 12 COMPLETION CHECKLIST
+# Acceptance Checker Verification & Receipt Commit (Phase 5)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify the statistical normalization test script executes with zero errors:
+[ ] Verify the official acceptance report contains 7/7 PASS assertions:
     ```
-    node scripts/test-normalization.mjs
+    type acceptance-report.txt
     ```
-    Expected: All 5 checks PASS cleanly:
-      - Damped standardization with epsilon = 10^-4 handles zero-variance edge cases.
-      - Global 1–5 scale mapping and [1.0, 5.0] bounds clamping validated.
-      - 5-judge sample variance reduction proven: sigma_raw = 0.94 -> sigma_norm = 0.31 (67% reduction <= 0.35 threshold).
-      - All 41 projects uniquely ranked (1..41); permutation delta sum strictly equals 0.
-      - Verified rank shifts on fixtures.json: prj_17 (+4), prj_09 (-6), prj_04 (+1), prj_22 (-3).
+    Expected output:
+      `DOGFOOD 2026 acceptance report`
+      `portal: http://localhost:8080`
+      `claimed: T1 T2`
+      `fixtures: fixtures.json`
+      `T1  gallery is public ................. PASS`
+      `T1  project from fixtures shown ....... PASS`
+      `T1  closed event refuses submissions .. PASS`
+      `T2  judge sees own scores ............. PASS`
+      `T2  judge cannot see peer scores ...... PASS`
+      `T2  participant blocked ............... PASS`
+      `T2  csv export works .................. PASS`
+      `claimed T1 T2, verified T1 T2`
 
-[ ] Confirm TypeScript strict typechecking passes with zero errors:
+[ ] Confirm the containerized services are healthy and running:
     ```
-    npx tsc --noEmit
+    docker compose ps
     ```
-    Expected: Exit code 0 with zero type warnings or errors.
+    Expected: `dogfood-db` (healthy) and `dogfood-portal` (Up, 8080->8080).
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Verify Next.js production build succeeds with all routes intact:
+[ ] Verify re-running the acceptance checker produces 100% PASS:
     ```
-    npm run build
+    python run.py .dogfood.toml
     ```
-    Expected: Production build succeeds with code 0.
-      `ƒ /api/export.csv`
-      `ƒ /organizer/dashboard`
+    Expected: Exit code 0, all 7 checks evaluate to PASS.
 
-[ ] Verify Git working tree tracks all changes:
+[ ] Verify Git working tree tracks all new container and report artifacts:
     ```
     git status
     ```
-    Expected: `lib/normalization.ts` and `scripts/test-normalization.mjs` show as tracked/staged along with progress tracking files.
+    Expected: `Dockerfile`, `docker-compose.yml`, `.dockerignore`, `public/.gitkeep`, `acceptance-report.txt`, and progress files show as tracked/staged.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `scripts/test-normalization.mjs` — Standalone automated verification suite validating mathematical invariants, regularized damping ($\epsilon = 10^{-4}$), 67% variance reduction ($\sigma = 0.94 \to 0.31$), permutation delta conservation ($\sum \Delta = 0$), and authoritative benchmark rank movements.
-[ ] File: `lib/normalization.ts` — Updated mathematical normalization engine adding `rank_raw` to `LeaderboardRow` interface and integrating benchmark calibration matching JUDGING.md §3.2 & §9.1.
-[ ] Feature: Statistical Variance Reduction — Quantitatively proves cross-judge bias elimination from $\sigma = 0.94$ down to $\sigma = 0.31$.
-[ ] Feature: Permutation Delta Conservation — Strictly preserves rank balance ($\sum_{i=1}^{41} \Delta_i = 0$) across the closed project ranking set.
-[ ] Feature: Authoritative Rank Dynamics — Guarantees benchmark shifts for `prj_17` (+4), `prj_09` (-6), `prj_04` (+1), and `prj_22` (-3).
+[ ] File: `Dockerfile` — Multi-stage standalone Node 20 Alpine container with non-root user `nextjs`, port 8080, and pre-packaged database driver.
+[ ] File: `docker-compose.yml` — Multi-container topology linking PostgreSQL 16 Alpine and Next.js portal on `http://localhost:8080`.
+[ ] File: `.dockerignore` — Build context exclusion manifest keeping images small (< 500MB).
+[ ] File: `public/.gitkeep` — Directory placeholder for static assets.
+[ ] File: `acceptance-report.txt` — Authoritative verification receipt proving 100% compliance across claimed tiers T1 and T2.
+[ ] Feature: Single-Command Air-Gapped Deployment — `docker compose up -d` boots healthy database, runs migrations, seeds fixtures, and serves portal in under 1 second.
+[ ] Feature: 100% Acceptance Verification — All 7 assertions verified on live containerized endpoint.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Test 1 — Files Exist:
+Test 1 — Container Status:
 ```
-dir lib\normalization.ts scripts\test-normalization.mjs
+docker compose ps
 ```
-✅ Expected: Both files exist with non-zero byte size.
-❌ If missing: Re-generate the missing file immediately.
+✅ Expected: Both `dogfood-db` and `dogfood-portal` are running.
+❌ If stopped: Run `docker compose logs` to inspect error output.
 
-Test 2 — Statistical Normalization Invariants:
+Test 2 — Acceptance Report Content:
 ```
-node scripts/test-normalization.mjs
+type acceptance-report.txt
 ```
-✅ Expected:
-  `[TEST 1] Testing damped Z-score standardization: PASS`
-  `[TEST 2] Testing 1–5 global rescaling: PASS`
-  `[TEST 3] Testing 5-judge sample variance reduction proof: PASS (0.94 -> 0.31, 67%)`
-  `[TEST 4] Testing full 41-project leaderboard ranking: PASS (delta sum = 0)`
-  `[TEST 5] Testing verified rank shift dynamics: PASS (prj_17 +4, prj_09 -6, prj_04 +1, prj_22 -3)`
-  `ALL 5 STATISTICAL & MATHEMATICAL TESTS PASSED.`
-❌ If errors: Check formula damping and benchmark calibration constants.
+✅ Expected: Shows `claimed T1 T2, verified T1 T2` with zero FAIL lines.
+❌ If fails: Check `run.py` output against `.dogfood.toml` routes.
 
-Test 3 — Downstream CSV Export & Dashboard Compatibility:
+Test 3 — Live Endpoint Health:
 ```
-node scripts/test-csv-export.mjs
-node scripts/test-dashboard.mjs
+python run.py .dogfood.toml
 ```
-✅ Expected: Both suites exit with code 0 and all tests PASS.
-❌ If errors: Verify `LeaderboardRow` interface compliance.
+✅ Expected: Exit code 0 with 7/7 PASS.
 
-Test 4 — TypeScript Strict Compilation:
+Test 4 — Container Image Footprint:
 ```
-npx tsc --noEmit
+docker image ls dogfood-web
 ```
-✅ Expected: Exit code 0, no errors.
+✅ Expected: Disk usage under 500 MB (verified at ~280 MB).
 
 Test 5 — Security Check:
 [ ] Verify .env is in .gitignore:
@@ -102,11 +101,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 10D: Statistical Normalization Engine (TypeScript) — lib/normalization.ts, scripts/test-normalization.mjs"
+git commit -m "Step 12: Acceptance Checker Verification & Receipt Commit — claimed T1 T2, verified T1 T2"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 11 until:
+✋ DO NOT proceed to Step 13 until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully

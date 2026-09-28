@@ -401,6 +401,77 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - Pass
 ---
 
+## Step 11 — Offline Docker Multi-Container Architecture
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Created `.dockerignore` file excluding local development artifacts (`node_modules`, `.next`, `.git`, `.agents`, `.env.local`).
+- Created multi-stage `Dockerfile` (`node:20-alpine`) utilizing 3 distinct stages: `deps` (dependency installation via `npm ci --ignore-scripts`), `builder` (`npm run build` with `NEXT_TELEMETRY_DISABLED=1`), and `runner` (minimal standalone runner with non-root system user `nextjs:nodejs`, port 8080, standalone bundle, static assets, and pre-packaged `postgres` driver).
+- Created `docker-compose.yml` orchestrating `db` (`postgres:16-alpine` with healthcheck `pg_isready -U dogfood_user -d dogfood_db`) and `web` (`dogfood-portal` on `http://localhost:8080` with startup command `node scripts/migrate.mjs && node scripts/seed.mjs && node server.js`).
+- Created `public/.gitkeep` ensuring asset copying succeeds during Docker container build.
+- Executed `docker compose build` yielding standalone image `dogfood-web:latest` at 280 MB disk usage (content size 65.7 MB), well below the 500 MB budget.
+- Executed `docker compose up -d` starting `dogfood-db` (healthy) and `dogfood-portal` (started, listening on port 8080 in 108ms).
+- Verified `docker logs dogfood-portal` shows all 11 tables and 6 indexes created, fixtures seeded, deterministic test sessions logged, and server ready.
+
+**Files Created:**
+- `.dockerignore` — Build context exclusion manifest
+- `Dockerfile` — Multi-stage standalone Node 20 Alpine container definition
+- `docker-compose.yml` — Multi-container orchestration for PostgreSQL and Next.js portal
+- `public/.gitkeep` — Directory placeholder for static assets
+
+**Files Modified:**
+- None
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `docker compose build` compiled image `dogfood-web:latest` with exit code 0 (280 MB).
+- `docker compose up -d` started services with exit code 0; `dogfood-db` passed healthcheck.
+- `docker logs dogfood-portal` confirmed successful migration, seeding, and listener on `0.0.0.0:8080`.
+- Pass
+---
+
+## Step 12 — Acceptance Checker Verification & Receipt Commit
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Executed the official, unmodified organizers' acceptance test suite: `python run.py .dogfood.toml`.
+- Verified all 7 core assertions across claimed tiers T1 and T2:
+  1. `T1 gallery is public` -> PASS (HTTP 200 without auth)
+  2. `T1 project from fixtures shown` -> PASS (fixture project titles embedded in server HTML)
+  3. `T1 closed event refuses submissions` -> PASS (HTTP 400 returned on late submission)
+  4. `T2 judge sees own scores` -> PASS (HTTP 200 returned for judge_a own ballots)
+  5. `T2 judge cannot see peer scores` -> PASS (HTTP 403 returned when judge_b queries judge_a)
+  6. `T2 participant blocked` -> PASS (HTTP 403 returned for participant on judge endpoint)
+  7. `T2 csv export works` -> PASS (HTTP 200 returned for organizer with comma-separated streaming header)
+- Generated authoritative verification receipt `acceptance-report.txt` verifying `claimed T1 T2, verified T1 T2` with zero FAIL lines.
+
+**Files Created:**
+- `acceptance-report.txt` — Official acceptance test verification receipt
+
+**Files Modified:**
+- None
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `python run.py .dogfood.toml` exited with code 0:
+  `T1  gallery is public ................. PASS`
+  `T1  project from fixtures shown ....... PASS`
+  `T1  closed event refuses submissions .. PASS`
+  `T2  judge sees own scores ............. PASS`
+  `T2  judge cannot see peer scores ...... PASS`
+  `T2  participant blocked ............... PASS`
+  `T2  csv export works .................. PASS`
+  `claimed T1 T2, verified T1 T2`
+- Pass
+---
+
+
 
 
 

@@ -1,0 +1,56 @@
+# ==============================================================================
+# Docker Compose for Dogfood 2026 Hackathon Portal
+# Services:
+#   - db: PostgreSQL 16 Alpine with healthcheck
+#   - web: Next.js 15 Standalone on Port 8080 (air-gapped, zero cloud dependencies)
+# ==============================================================================
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: dogfood-db
+    restart: always
+    environment:
+      POSTGRES_USER: dogfood_user
+      POSTGRES_PASSWORD: dogfood_secure_password_local
+      POSTGRES_DB: dogfood_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dogfood_user -d dogfood_db"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 3s
+    networks:
+      - dogfood-net
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dogfood-portal
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      HOSTNAME: "0.0.0.0"
+      NODE_ENV: "production"
+      NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: "postgresql://dogfood_user:dogfood_secure_password_local@db:5432/dogfood_db"
+      FIXTURES_PATH: "/app/fixtures.json"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - dogfood-net
+
+volumes:
+  pgdata:
+
+networks:
+  dogfood-net:
+    driver: bridge

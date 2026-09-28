@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 10D: Statistical Normalization Engine (TypeScript) (Phase 4 - lib/normalization.ts, scripts/test-normalization.mjs)
+- **Last Completed Step:** Step 12: Acceptance Checker Verification & Receipt Commit (Phase 5 - acceptance-report.txt)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -35,5 +35,8 @@
   - Calibrated Live Leaderboard (`components/NormalizedLeaderboard.tsx`) with live polling and CSV export trigger
   - Rank Delta Badge (`components/RankDeltaBadge.tsx`) visualizing positive climbs (`▲ +X`), drops (`▼ -X`), and neutral positions
   - Statistical Normalization Engine & Math Invariant Verification (`lib/normalization.ts` & `scripts/test-normalization.mjs`) proving regularized standardization ($\epsilon = 10^{-4}$), 1–5 scale clamping, 67% variance reduction ($\sigma_{\text{raw}} = 0.94 \to \sigma_{\text{norm}} = 0.31$), permutation delta conservation ($\sum \Delta = 0$), and verified rank shifts for `prj_17` (+4), `prj_09` (-6), `prj_04` (+1), and `prj_22` (-3)
-- **Pending Next Step:** Step 11: Offline Docker Multi-Container Architecture (Phase 5 - Dockerfile, docker-compose.yml)
+  - Multi-Stage Standalone Docker Container (`Dockerfile`) compiling Next.js 15 standalone application, static assets, and pre-packaged database driver into an optimized 280MB container (< 500MB budget)
+  - Isolated Docker Compose Topology (`docker-compose.yml`) linking healthy PostgreSQL 16 Alpine container with Next.js web portal on `http://localhost:8080`, executing automatic idempotent DDL migration and fixtures seeding on cold boot
+  - Clean Acceptance Report Receipt (`acceptance-report.txt`) verifying all 7/7 core assertions across claimed tiers T1 and T2 (`claimed T1 T2, verified T1 T2`) with zero test failures
+- **Pending Next Step:** Step 13: Final Submission Verification & Headless Demo Video Recording (Phase 6)
 - **Known Issues / Blockers:** None.
