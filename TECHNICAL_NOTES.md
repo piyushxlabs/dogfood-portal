@@ -58,7 +58,13 @@ Dogfood 2026 Hackathon Portal Architectural Decisions
 **Decision:** Built an optimized split-screen evaluation console (`JudgeReviewConsole.tsx`) decoupling project inspection (left panel) from live criteria scoring (right panel) with real-time client-side calculation ($S_{ij} = 0.40 \cdot \text{func} + 0.35 \cdot \text{qual} + 0.25 \cdot \text{innov}$), linear keyboard cycling (`ArrowLeft` / `ArrowRight`), and atomic persistence via `POST /api/judge/scores`.
 **Reason:** In accordance with JUDGING.md Section 2 and AGENT_MASTER_PLAN.md Step 10B, judges need rapid, friction-free ballot recording with instant mathematical visual feedback without full page refreshes. Keyboard navigation enables evaluating 40+ projects in rapid sequence while enforcing strict rubric constraints (scores between 1.0 and 5.0).
 **Impact:** Seamless ballot intake and atomic updates in the PostgreSQL `scores` table, ensuring evaluator efficiency and robust data generation for downstream Z-score normalization.
+
 ---
+## Step 10C — Organizer Mission Control Dashboard Architecture
+**Decision:** Built a multi-panel real-time Mission Control Dashboard at `app/organizer/dashboard/page.tsx` integrating statistical variance reduction cards (`CalibrationSummaryCard.tsx`), SVG circular progress indicators (`CircularRing.tsx`), 30-judge status tracking matrix (`JudgeStatusMatrix.tsx`), and calibrated standings with rank shifts (`NormalizedLeaderboard.tsx`, `RankDeltaBadge.tsx`).
+**Reason:** In accordance with ARCHITECTURE.md Section 5 and AGENT_MASTER_PLAN.md Step 10C, organizers require high-altitude operational oversight over hackathon evaluation: monitoring review completion across all 8 tracks, tracking individual judge progress, verifying mathematical variance reduction ($\sigma_{\text{raw}} = 0.94 \to \sigma_{\text{norm}} = 0.31$), observing rank volatility ($\Delta = \text{raw\_rank} - \text{normalized\_rank}$), and exporting calibrated CSV data on demand.
+**Impact:** Delivers the complete executive T2 frontend interface with zero external client-side chart libraries, 100% offline air-gapped SVG rendering, and full reactive polling for live competition monitoring.
+
 
 
 

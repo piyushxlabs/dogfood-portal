@@ -1,15 +1,15 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 10B COMPLETION CHECKLIST
-# Judge Split-Screen Speed Console (T2 Frontend)
+# STEP 10C COMPLETION CHECKLIST
+# Organizer Mission Control Dashboard (T2 Frontend)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify the Judge Console test script executes with zero errors:
+[ ] Verify the Mission Control Dashboard test script executes with zero errors:
     ```
-    node scripts/test-judge-console.mjs
+    node scripts/test-dashboard.mjs
     ```
-    Expected: All checks PASS cleanly (all 4 components/routes exist, weighted rubric formula verified with 3.15 / 5.00 / 1.00 / 3.85, 41-project review navigation indices verified).
+    Expected: All checks PASS cleanly (all 6 components exist, RankDeltaBadge renders ▲ +X / ▼ -X / -, CircularRing computes correct SVG stroke-dashoffset, 30 judges and 8 tracks verified, statistical constants confirmed: sigma_raw=0.94, sigma_norm=0.31, 67% reduction).
 
 [ ] Confirm TypeScript strict typechecking passes with zero errors:
     ```
@@ -20,32 +20,32 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Verify Next.js production build includes the judge routes:
+[ ] Verify Next.js production build includes the organizer dashboard route:
     ```
     npm run build
     ```
     Expected: Route table outputs:
-      `ƒ /judge`
-      `ƒ /judge/review/[projectId]`
+      `ƒ /organizer/dashboard`
     Status: Compiled successfully with zero type errors.
 
-[ ] Verify Git working tree is clean and tracks all new and modified files:
+[ ] Verify Git working tree tracks all new components and pages:
     ```
     git status
     ```
-    Expected: `components/RubricSlider.tsx`, `components/JudgeReviewConsole.tsx`, `app/judge/page.tsx`, `app/judge/review/[projectId]/page.tsx`, and `scripts/test-judge-console.mjs` show as tracked/staged, along with updated tracking files.
+    Expected: `components/RankDeltaBadge.tsx`, `components/CalibrationSummaryCard.tsx`, `components/CircularRing.tsx`, `components/JudgeStatusMatrix.tsx`, `components/NormalizedLeaderboard.tsx`, `app/organizer/dashboard/page.tsx`, and `scripts/test-dashboard.mjs` show as tracked/staged.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `components/RubricSlider.tsx` — Interactive rubric criterion slider with weight badge (40%, 35%, 25%), scale ticks, numeric readout, and descriptive hints.
-[ ] File: `components/JudgeReviewConsole.tsx` — Split-screen speed console client component with project inspector, rubric scoring, real-time weighted score calculation, keyboard shortcuts, and `POST /api/judge/scores` integration.
-[ ] File: `app/judge/review/[projectId]/page.tsx` — Server component for project speed review with fallback loading and encryption status badge.
-[ ] File: `app/judge/page.tsx` — Judge portal dashboard hub tracking assigned project completion status (Total, Evaluated, Pending) with direct review action links.
-[ ] File: `scripts/test-judge-console.mjs` — Automated unit test suite verifying rubric math, boundary constraints, and project review sequencing.
-[ ] Feature: Real-Time Rubric Scoring — Evaluates $S_{ij} = (0.40 \cdot \text{func}) + (0.35 \cdot \text{qual}) + (0.25 \cdot \text{innov})$ on every input change.
-[ ] Feature: Rapid Keyboard Navigation — Left [←] and Right [→] arrow keys cycle seamlessly between unreviewed projects.
+[ ] File: `components/RankDeltaBadge.tsx` — Dynamic rank movement indicator badge (`▲ +X` in emerald, `▼ -X` in rose, `-` in zinc).
+[ ] File: `components/CalibrationSummaryCard.tsx` — Statistical variance proof card displaying $\sigma_{\text{raw}} = 0.94$, $\sigma_{\text{norm}} = 0.31$, and $67\%$ variance reduction with damped Z-score formula.
+[ ] File: `components/CircularRing.tsx` — Pure SVG circular progress indicator with dynamic stroke-dashoffset tracking completion across 8 category tracks.
+[ ] File: `components/JudgeStatusMatrix.tsx` — 30-judge progress and status matrix with track badges, progress bars, and status indicators (`COMPLETE`, `PENDING`, `NOT_STARTED`).
+[ ] File: `components/NormalizedLeaderboard.tsx` — Calibrated leaderboard with live polling, delta badges, and direct CSV export download trigger.
+[ ] File: `app/organizer/dashboard/page.tsx` — Organizer executive command center page integrating all 4 sections with defensive fallback and session verification.
+[ ] File: `scripts/test-dashboard.mjs` — Automated unit test suite verifying dashboard component contracts, SVG geometry math, and dataset integrity.
+[ ] Feature: Live Statistical Oversight — Displays real-time bias correction metrics and tracks review velocity without external chart libraries.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -53,51 +53,45 @@
 
 Test 1 — Files Exist:
 ```
-dir components\RubricSlider.tsx components\JudgeReviewConsole.tsx app\judge\page.tsx app\judge\review\[projectId]\page.tsx scripts\test-judge-console.mjs
+dir components\RankDeltaBadge.tsx components\CalibrationSummaryCard.tsx components\CircularRing.tsx components\JudgeStatusMatrix.tsx components\NormalizedLeaderboard.tsx app\organizer\dashboard\page.tsx scripts\test-dashboard.mjs
 ```
-✅ Expected: All 5 files exist with non-zero byte size.
+✅ Expected: All 7 files exist with non-zero byte size.
 ❌ If missing: Re-generate the missing file immediately.
 
-Test 2 — Dependencies Check:
+Test 2 — Dashboard Component Logic & Math Verification:
 ```
-npm list lucide-react
-```
-✅ Expected: `lucide-react@0.468.0` installed and resolved.
-❌ If errors: Run `npm install lucide-react@^0.468.0`.
-
-Test 3 — Judge Console Verification Suite:
-```
-node scripts/test-judge-console.mjs
+node scripts/test-dashboard.mjs
 ```
 ✅ Expected:
-```
-[TEST-JUDGE-CONSOLE] Running Judge Speed Console verification suite...
-✓ Test 1: All 4 Judge Console components and routes exist with valid content.
-✓ Test 2a: Standard score formula verified: (0.4*4 + 0.35*3 + 0.25*2) = 3.15.
-✓ Test 2b: Maximum score ceiling verified: 5.00.
-✓ Test 2c: Minimum score floor verified: 1.00.
-✓ Test 2d: Intermediate score verified: 3.85.
-✓ Test 3: 41-project review navigation indices verified sequentially.
-======================================================================
-[TEST-JUDGE-CONSOLE] ALL JUDGE CONSOLE VERIFICATIONS PASSED.
-======================================================================
-```
-❌ If errors: Inspect `scripts/test-judge-console.mjs` and components.
+  `[TEST 1] Component files exist: PASS`
+  `[TEST 2] RankDeltaBadge logic: PASS`
+  `[TEST 3] CircularRing SVG calculation: PASS`
+  `[TEST 4] 30 Judges and 8 Tracks dataset: PASS`
+  `[TEST 5] Statistical calibration constants: PASS`
+  `All tests PASSED successfully.`
+❌ If errors: Check math calculations and component prop interfaces.
 
-Test 4 — Next.js Standalone Build & Route Verification:
+Test 3 — Production Build Verification:
 ```
 npm run build
 ```
-✅ Expected: Build succeeds and lists `ƒ /judge` and `ƒ /judge/review/[projectId]`.
-❌ If wrong: Review compiler output in terminal.
+✅ Expected: Dynamic route `ƒ /organizer/dashboard` generated, compiled with code 0.
+❌ If errors: Run `npx tsc --noEmit` to locate TypeScript syntax errors.
+
+Test 4 — Functional Verification:
+Observe dashboard markup and server pre-render:
+```
+node scripts/test-dashboard.mjs
+```
+✅ Expected: Exit code 0, all assertions pass.
 
 Test 5 — Security Check:
-[ ] Verify .env.local is in .gitignore:
+[ ] Verify .env is in .gitignore:
     ```
-    git check-ignore .env.local
+    type .gitignore | findstr .env
     ```
-    ✅ Expected: `.env.local` appears in the output.
-    ❌ If missing: Add `.env.local` to `.gitignore` immediately.
+    ✅ Expected: `.env*` or `.env.local` appears in the output.
+    ❌ If missing: Add `.env` to `.gitignore` immediately.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 GIT COMMIT
@@ -106,11 +100,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 10B: Judge Split-Screen Speed Console — app/judge/review/[projectId]/page.tsx"
+git commit -m "Step 10C: Organizer Mission Control Dashboard — app/organizer/dashboard/page.tsx"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 10C until:
+✋ DO NOT proceed to Step 10D until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully
