@@ -1,21 +1,21 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 6 COMPLETION CHECKLIST
-# Public Gallery Route & RSC Page
+# STEP 7 COMPLETION CHECKLIST
+# Deadline-Enforced Submission Route Handler
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify existence of gallery and API files:
+[ ] Verify existence of submission route handler:
     ```
-    ls -la app/projects/page.tsx app/api/projects/route.ts components/GalleryClient.tsx components/ProjectCard.tsx
+    ls -la app/projects/new/route.ts scripts/test-submission.mjs
     ```
-    Expected: All four files exist.
+    Expected: Both files exist.
 
-[ ] Confirm root redirect in app/page.tsx:
+[ ] Run submission deadline tests:
     ```
-    cat app/page.tsx
+    node scripts/test-submission.mjs
     ```
-    Expected: redirect('/projects') present.
+    Expected: "ALL DEADLINE ENFORCEMENT TESTS PASSED CLEANLY."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
@@ -30,24 +30,16 @@
     ```
     npm run build
     ```
-    Expected: "Compiled successfully" with route `○ /projects` and `ƒ /api/projects`.
-
-[ ] Verify fixture project titles embedded in server HTML:
-    ```
-    Select-String -Path .next/server/app/projects.html -Pattern "Glass Signal"
-    ```
-    Expected: Match found in pre-rendered HTML.
+    Expected: "Compiled successfully" with route `ƒ /projects/new`.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `app/projects/page.tsx` — Public Bento-Grid gallery RSC page with zero pagination and all 41 project titles in server HTML
-[ ] File: `app/api/projects/route.ts` — API Route Handler GET /api/projects returning JSON project records
-[ ] File: `components/GalleryClient.tsx` — Interactive search, category filter pills, and bento grid layout
-[ ] File: `components/ProjectCard.tsx` — Responsive project card component with hover lift animation
-[ ] File: `app/page.tsx` — Updated root redirect to /projects
-[ ] Feature: T1 Gallery & Fixture Project Display — satisfies run.py T1 checks
+[ ] File: `app/projects/new/route.ts` — Route Handler enforcing authentication, participant role, and past deadline rejection returning HTTP 400
+[ ] File: `scripts/test-submission.mjs` — Automated verification tests for submission deadline refusal
+[ ] Types: `src/types/db.ts` — Updated `AuditLogPayload.blocked_status_code` to allow 400 for deadline audit logging
+[ ] Feature: Hard Deadline Enforcement — satisfies run.py T1 closed event check
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -55,31 +47,31 @@
 
 Test 1 — Files Exist:
 ```
-ls -la app/projects/page.tsx app/api/projects/route.ts components/GalleryClient.tsx components/ProjectCard.tsx app/page.tsx
+ls -la app/projects/new/route.ts scripts/test-submission.mjs
 ```
-✅ Expected: All files appear.
-❌ If missing: Check app/ and components/ directories.
+✅ Expected: Both files appear.
+❌ If missing: Check app/projects/new/ directory.
 
-Test 2 — TypeScript Compilation:
+Test 2 — Submission Unit Tests:
+```
+node scripts/test-submission.mjs
+```
+✅ Expected: All 4 test cases pass with exit code 0.
+❌ If errors: Check deadline comparison logic.
+
+Test 3 — TypeScript Compilation:
 ```
 npx tsc --noEmit
 ```
 ✅ Expected: Clean exit 0 with 0 type errors.
-❌ If errors: Check React component prop types.
+❌ If errors: Check types in `src/types/db.ts`.
 
-Test 3 — Next.js Standalone Build:
+Test 4 — Next.js Standalone Build:
 ```
 npm run build
 ```
-✅ Expected: "Compiled successfully" with static route `○ /projects`.
-❌ If errors: Check import paths or RSC syntax.
-
-Test 4 — Fixture Title Assertion:
-```
-Select-String -Path .next/server/app/projects.html -Pattern "Glass Signal"
-```
-✅ Expected: Match found in `.next/server/app/projects.html`.
-❌ If missing: Ensure `app/projects/page.tsx` pre-renders all project titles in the initial HTML markup.
+✅ Expected: "Compiled successfully" with route `ƒ /projects/new`.
+❌ If errors: Check Route Handler export syntax.
 
 Test 5 — Security Check:
 [ ] Verify .env is in .gitignore
@@ -96,11 +88,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 6: Public Gallery Route & RSC Page — app/projects/page.tsx and components/GalleryClient.tsx"
+git commit -m "Step 7: Deadline-Enforced Submission Route Handler — app/projects/new/route.ts"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 7 until:
+✋ DO NOT proceed to Step 8 until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully

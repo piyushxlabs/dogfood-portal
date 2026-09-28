@@ -1,7 +1,7 @@
 # PROJECT STATE
 **Project:** Dogfood 2026 Hackathon Portal
 
-- **Last Completed Step:** Step 6: Public Gallery Route & RSC Page (app/projects/page.tsx, app/api/projects/route.ts)
+- **Last Completed Step:** Step 7: Deadline-Enforced Submission Route Handler (app/projects/new/route.ts)
 - **Implemented Features:**
   - Next.js 15 App Router scaffold with TypeScript strict mode
   - Tailwind CSS dark mode zinc design system tokens & base CSS
@@ -20,5 +20,6 @@
   - Interactive search and category filter pills (`components/GalleryClient.tsx`) with zero server roundtrips
   - API route handler (`app/api/projects/route.ts`) returning JSON project catalog
   - Automatic portal root redirect from `/` to `/projects` (`app/page.tsx`)
-- **Pending Next Step:** Step 7: Deadline-Enforced Submission Route Handler (T1.closed_event - app/projects/new/route.ts)
+  - Deadline-enforced submission Route Handler (`app/projects/new/route.ts`) refusing late submissions with HTTP 400 and logging audit violations
+- **Pending Next Step:** Step 8: Role-Isolated Judging Route Handler (T2.judge_scores & T2.peer_scores - app/api/judge/scores/route.ts)
 - **Known Issues / Blockers:** None.

@@ -190,6 +190,35 @@ Dogfood 2026 Hackathon Portal Implementation Track
 - Pass
 ---
 
+## Step 7 — Deadline-Enforced Submission Route Handler
+**Date:** 2026-09-28
+**Status:** Complete
+
+**What was implemented:**
+- Implemented `POST /projects/new` and `GET /projects/new` Route Handler in `app/projects/new/route.ts` enforcing authentication, participant/admin role, and strict deadline checking.
+- Evaluated deadline against `events.submissions_close` (`2026-03-01T18:00:00Z`). Since the deadline is in the past, immediately returns HTTP 400 Bad Request with descriptive error payload.
+- Integrated security audit logging via `logAuditViolation` logging `SUBMISSION_REJECTED_DEADLINE` to `audit_logs`.
+- Updated `src/types/db.ts` to allow HTTP status code `400` in `AuditLogPayload.blocked_status_code`.
+- Implemented and executed test probe `scripts/test-submission.mjs` verifying 4 distinct deadline rejection and role scenarios.
+
+**Files Created:**
+- `app/projects/new/route.ts` — Next.js Route Handler for POST /projects/new enforcing past deadline rejection
+- `scripts/test-submission.mjs` — Automated verification tests for submission deadline refusal
+
+**Files Modified:**
+- `src/types/db.ts` — Added status 400 to AuditLogPayload.blocked_status_code
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `node scripts/test-submission.mjs` executed with exit code 0: all 4 test cases passed (400 on late submission, 401 unauth, 403 judge, 400 <= status < 500 condition verified).
+- `npx tsc --noEmit` passed with 0 errors.
+- `npm run build` compiled successfully in 2.4s with route `ƒ /projects/new`.
+- Pass
+---
+
+
 
 
 

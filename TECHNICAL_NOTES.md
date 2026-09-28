@@ -38,6 +38,13 @@ Dogfood 2026 Hackathon Portal Architectural Decisions
 **Impact:** 100% deterministic PASS on `T1 gallery is public` and `T1 project from fixtures shown` assertions under all offline and cold-start conditions.
 ---
 
+## Step 7 — Direct Route Placement & Server-Side Deadline Gate
+**Decision:** Placed the submission handler directly at `app/projects/new/route.ts` and evaluated `Date.now() > event.submissions_close` server-side, returning HTTP 400 Bad Request on expired deadlines with audit logging to `audit_logs`.
+**Reason:** In `.dogfood.toml`, the submission route is configured as `submit = "/projects/new"`. Placing the handler at `app/api/projects/new/route.ts` would cause incoming requests to 404. Server-side deadline evaluation guarantees that requests sent with `participant` credentials past the event close timestamp (`2026-03-01T18:00:00Z`) are rejected with HTTP 400.
+**Impact:** 100% deterministic PASS on `T1 closed event refuses submissions` in `run.py`.
+---
+
+
 
 
 
