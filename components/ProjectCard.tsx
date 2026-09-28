@@ -1,6 +1,6 @@
 // components/ProjectCard.tsx
-// Bento-grid project card with hover lift animation and track badge
-// Authoritative specification: SYSTEM_SCOPE_AND_BEHAVIOR.md §3
+// Bento-grid project card with hover lift animation, track badge, and metadata
+// Authoritative specification: SYSTEM_SCOPE_AND_BEHAVIOR.md §3 & AGENT_MASTER_PLAN.md Step 10A
 
 import React from 'react';
 import { ExternalLink, GitBranch, Calendar } from 'lucide-react';
@@ -28,11 +28,17 @@ const TRACK_COLORS: Record<string, { bg: string; text: string; border: string }>
   trk_08: { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20' },
 };
 
-export function ProjectCard({ project }: { project: ProjectCardData }) {
+export function ProjectCard({
+  project,
+  className = '',
+}: {
+  project: ProjectCardData;
+  className?: string;
+}) {
   const trackStyle = TRACK_COLORS[project.track_id] || {
-    bg: 'bg-zinc-800',
+    bg: 'bg-zinc-800/60',
     text: 'text-zinc-300',
-    border: 'border-zinc-700',
+    border: 'border-zinc-700/50',
   };
 
   const formattedDate = project.submitted_at
@@ -46,20 +52,31 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
 
   return (
     <article
+      id={`project-card-${project.id}`}
       data-project-id={project.id}
-      className="group relative flex flex-col justify-between p-6 bg-zinc-900 border border-zinc-800 rounded-xl transition-all duration-200 ease-out hover:border-zinc-700 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/60"
+      className={`group relative flex flex-col justify-between p-6 bg-zinc-900/90 backdrop-blur-sm border border-zinc-800 rounded-2xl transition-all duration-200 ease-out hover:border-zinc-700 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl hover:shadow-zinc-950/80 ${className}`}
     >
       <div>
         <div className="flex items-center justify-between gap-2 mb-3">
           <span
+            id={`project-track-${project.id}`}
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${trackStyle.bg} ${trackStyle.text} ${trackStyle.border}`}
           >
             {project.track_name}
           </span>
-          <span className="text-xs font-mono text-zinc-500">{project.team_name}</span>
+          <span
+            id={`project-team-${project.id}`}
+            className="text-xs font-mono text-zinc-500 truncate max-w-[140px]"
+            title={project.team_name}
+          >
+            {project.team_name}
+          </span>
         </div>
 
-        <h3 className="text-lg font-bold tracking-tight text-zinc-100 group-hover:text-white transition-colors mb-2">
+        <h3
+          id={`project-title-${project.id}`}
+          className="text-lg font-bold tracking-tight text-zinc-100 group-hover:text-white transition-colors mb-2 line-clamp-1"
+        >
           {project.title}
         </h3>
 
@@ -76,6 +93,7 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
 
         {project.repo_url && (
           <a
+            id={`project-repo-${project.id}`}
             href={project.repo_url}
             target="_blank"
             rel="noopener noreferrer"

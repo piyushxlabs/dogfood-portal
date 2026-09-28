@@ -1,15 +1,15 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# STEP 9 COMPLETION CHECKLIST
-# Streaming CSV Export Route Handler & Statistical Normalization Engine
+# STEP 10A COMPLETION CHECKLIST
+# Premium Bento-Grid Gallery (T1 Frontend)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify the CSV export and normalization test script executes with zero errors:
+[ ] Verify the gallery UI verification script executes with zero errors:
     ```
-    node scripts/test-csv-export.mjs
+    node scripts/test-gallery-ui.mjs
     ```
-    Expected: All assertions PASS cleanly (organizer 200, participant 403, judge 403, visitor 401, header format verified, 41 projects ranked, 18 climbed / 18 dropped, delta sum = 0).
+    Expected: All checks PASS cleanly (all 6 components exist, search/filter algorithms verified, and all 41 project titles confirmed pre-rendered in `.next/server/app/projects.html`).
 
 [ ] Confirm TypeScript strict typechecking passes with zero errors:
     ```
@@ -20,34 +20,29 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Verify Next.js production build includes all 5 claimed routes:
+[ ] Verify Next.js production build generates the static `/projects` route:
     ```
     npm run build
     ```
-    Expected: Route table outputs:
-      `ƒ /api/export.csv`
-      `ƒ /api/judge/scores`
-      `ƒ /api/projects`
-      `○ /projects`
-      `ƒ /projects/new`
-    Status: Compiled successfully with zero type errors.
+    Expected: Route table outputs `○ /projects (3.35 kB)` with status Compiled successfully.
 
 [ ] Verify Git working tree is clean and tracks all new and modified files:
     ```
     git status
     ```
-    Expected: `app/api/export.csv/route.ts`, `lib/normalization.ts`, and `scripts/test-csv-export.mjs` show as tracked/staged, along with updated tracking files.
+    Expected: Untracked and modified files appear staged/ready, along with updated tracking files.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `app/api/export.csv/route.ts` — High-throughput streaming CSV export Route Handler using chunked Web Streams API.
-[ ] File: `lib/normalization.ts` — Statistical Z-Score Normalization Engine implementing damped standardization, 1–5 scale calibration, rank movement calculations, and fixtures fallback.
-[ ] File: `scripts/test-csv-export.mjs` — Automated verification test suite validating CSV streaming, RFC 4180 escaping, role isolation, and normalization math.
-[ ] Feature: High-Throughput Streaming CSV — Streams results using `ReadableStream` with headers `Content-Type: text/csv; charset=utf-8` and `Content-Disposition: attachment; filename="dogfood_results_export.csv"`.
-[ ] Feature: Verified Comma Header — First line output is `rank,project_id,project_title,track_name,team_name,reviews_count,raw_average_score,normalized_score,rank_delta` satisfying `run.py` assertion.
-[ ] Security: Role Isolation Enforcement — Unauthenticated requests return HTTP 401 Unauthorized; participant and judge requests return HTTP 403 Forbidden per FIG. 02 Matrix.
+[ ] File: `components/SearchBar.tsx` — Client search input with clear button and accessible element IDs.
+[ ] File: `components/TrackFilterPills.tsx` — Track category pill selector with live project counts and active toggle states.
+[ ] File: `components/BentoGrid.tsx` — Responsive bento grid layout container (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`).
+[ ] File: `components/ProjectCard.tsx` — Enhanced dark card with `hover:scale-[1.02] hover:-translate-y-1` lift animations, track badges, and unique IDs.
+[ ] File: `components/GalleryClient.tsx` — Composed client component orchestrating search, track filters, and bento grid layout.
+[ ] File: `scripts/test-gallery-ui.mjs` — Automated unit test suite verifying component presence, filtering, and server HTML embedding.
+[ ] Feature: Zero-Pagination Server HTML Guarantee — All 41 project titles are pre-rendered into the initial HTML response so `run.py` passes immediately without browser JavaScript.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -55,44 +50,42 @@
 
 Test 1 — Files Exist:
 ```
-dir app\api\export.csv\route.ts lib\normalization.ts scripts\test-csv-export.mjs
+dir components\SearchBar.tsx components\TrackFilterPills.tsx components\BentoGrid.tsx components\ProjectCard.tsx components\GalleryClient.tsx
 ```
-✅ Expected: All three files exist with non-zero byte size.
+✅ Expected: All component files exist with non-zero byte size.
 ❌ If missing: Re-generate the missing file immediately.
 
 Test 2 — Dependencies Check:
 ```
-npm list postgres
+npm list lucide-react
 ```
-✅ Expected: `postgres@3.4.5` installed and resolved.
-❌ If errors: Run `npm install postgres@^3.4.5`.
+✅ Expected: `lucide-react@0.468.0` installed and resolved.
+❌ If errors: Run `npm install lucide-react@^0.468.0`.
 
-Test 3 — CSV Export & Normalization Verification Suite:
+Test 3 — Gallery UI Verification Suite:
 ```
-node scripts/test-csv-export.mjs
+node scripts/test-gallery-ui.mjs
 ```
 ✅ Expected:
 ```
-[TEST-CSV-EXPORT] Running CSV export route and math verification tests...
-✓ Test 1: organizer requesting export returned HTTP 200.
-✓ Test 2: participant blocked with HTTP 403 Forbidden.
-✓ Test 3: judge blocked with HTTP 403 Forbidden (FIG. 02 Matrix compliant).
-✓ Test 4: unauthenticated visitor returned HTTP 401 Unauthorized.
-✓ Test 5: CSV header format verified: 9 columns, contains comma (run.py T2.csv_export PASS).
-✓ Test 6: All 41 projects successfully ranked in leaderboard.
-✓ Test 7a: Rank movement symmetry verified: 18 climbed, 18 dropped, delta sum = 0.
-✓ Test 7b: Significant rank shifts verified: prj_04 (+1), prj_17 (+1), prj_38 (-6), prj_02 (-6).
+[TEST-GALLERY-UI] Running Bento-Grid Gallery verification suite...
+✓ Test 1: All 6 gallery component files exist with valid non-zero content.
+✓ Test 2: Fixtures dataset verified: 41 projects across 8 tracks.
+✓ Test 3a: Search filter accurately isolates "Glass Signal" (prj_01).
+✓ Test 3b: Track category filter accurately resolves 6 projects for trk_01.
+✓ Test 3c: Combined search and track filter resolves correctly.
+✓ Test 4: All 41 project titles confirmed pre-rendered in .next/server/app/projects.html (run.py T1 checks PASS).
 ======================================================================
-[TEST-CSV-EXPORT] ALL CSV STREAMING & NORMALIZATION TESTS PASSED.
+[TEST-GALLERY-UI] ALL BENTO-GRID GALLERY UI CHECKS PASSED.
 ======================================================================
 ```
-❌ If errors: Inspect `scripts/test-csv-export.mjs` and `lib/normalization.ts`.
+❌ If errors: Inspect `scripts/test-gallery-ui.mjs` and components.
 
 Test 4 — Next.js Standalone Build & Route Verification:
 ```
 npm run build
 ```
-✅ Expected: Build succeeds and lists `ƒ /api/export.csv`.
+✅ Expected: Build succeeds and lists `○ /projects (3.35 kB)`.
 ❌ If wrong: Review compiler output in terminal.
 
 Test 5 — Security Check:
@@ -110,11 +103,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Step 9: Streaming CSV Export Route Handler — app/api/export.csv/route.ts"
+git commit -m "Step 10A: Premium Bento-Grid Gallery — components/BentoGrid.tsx & SearchBar.tsx"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Step 10A until:
+✋ DO NOT proceed to Step 10B until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully

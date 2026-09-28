@@ -1,17 +1,17 @@
 // components/GalleryClient.tsx
 // Interactive Client Component: instant search, track category filter pills, bento grid layout
-// Authoritative specification: SYSTEM_SCOPE_AND_BEHAVIOR.md §3
+// Authoritative specification: SYSTEM_SCOPE_AND_BEHAVIOR.md §3 & AGENT_MASTER_PLAN.md Step 10A
 
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Search, X, Layers } from 'lucide-react';
+import { Layers } from 'lucide-react';
+import { SearchBar } from './SearchBar';
+import { TrackFilterPills, type TrackItem } from './TrackFilterPills';
+import { BentoGrid } from './BentoGrid';
 import { ProjectCard, type ProjectCardData } from './ProjectCard';
 
-export interface TrackData {
-  id: string;
-  name: string;
-}
+export type TrackData = TrackItem;
 
 interface GalleryClientProps {
   initialProjects: ProjectCardData[];
@@ -22,6 +22,16 @@ export function GalleryClient({ initialProjects, tracks }: GalleryClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
 
+  // Compute counts per track
+  const projectCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of initialProjects) {
+      counts[p.track_id] = (counts[p.track_id] || 0) + 1;
+    }
+    return counts;
+  }, [initialProjects]);
+
+  // Client-side instant filtering
   const filteredProjects = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     return initialProjects.filter((p) => {
@@ -39,93 +49,66 @@ export function GalleryClient({ initialProjects, tracks }: GalleryClientProps) {
     <div className="space-y-8">
       {/* Controls Container: Search & Track Filter Pills */}
       <div className="space-y-4">
-        {/* Instant Search Bar */}
-        <div className="relative max-w-xl">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
-            <Search className="w-4 h-4" />
-          </div>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search projects by title, summary, or team..."
-            className="w-full pl-10 pr-10 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600 transition"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500 hover:text-zinc-300"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+        <SearchBar
+          id="gallery-search-input"
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="Search projects by title, summary, or team..."
+        />
 
-        {/* Track Category Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-1">
-          <button
-            onClick={() => setSelectedTrackId(null)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-              selectedTrackId === null
-                ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
-            }`}
-          >
-            All Tracks ({initialProjects.length})
-          </button>
-
-          {tracks.map((track) => {
-            const isSelected = selectedTrackId === track.id;
-            const count = initialProjects.filter((p) => p.track_id === track.id).length;
-            return (
-              <button
-                key={track.id}
-                onClick={() => setSelectedTrackId(isSelected ? null : track.id)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
-                  isSelected
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                    : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
-                }`}
-              >
-                <span>{track.name}</span>
-                <span className={`text-[10px] font-mono ${isSelected ? 'text-zinc-600' : 'text-zinc-500'}`}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <TrackFilterPills
+          tracks={tracks}
+          selectedTrackId={selectedTrackId}
+          onSelectTrack={setSelectedTrackId}
+          projectCounts={projectCounts}
+          totalCount={initialProjects.length}
+        />
       </div>
 
-      {/* Results Header */}
-      <div className="flex items-center justify-between text-xs text-zinc-400 pb-2 border-b border-zinc-800/80">
-        <span className="font-mono">
-          Showing {filteredProjects.length} of {initialProjects.length} submissions
+      {/* Results Header Counter */}
+      <div className="flex items-center justify-between text-xs text-zinc-400 border-b border-zinc-800/60 pb-3">
+        <span>
+          Showing <strong className="text-zinc-200">{filteredProjects.length}</strong> of{' '}
+          {initialProjects.length} projects
         </span>
-        {selectedTrackId && (
+        {(searchQuery || selectedTrackId) && (
           <button
-            onClick={() => setSelectedTrackId(null)}
-            className="text-zinc-400 hover:text-zinc-200 underline decoration-zinc-600 underline-offset-4"
+            type="button"
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedTrackId(null);
+            }}
+            className="text-zinc-400 hover:text-zinc-200 underline transition"
           >
-            Reset track filter
+            Reset filters
           </button>
         )}
       </div>
 
-      {/* Bento Grid */}
+      {/* Bento Grid Gallery */}
       {filteredProjects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <BentoGrid id="projects-bento-grid">
           {filteredProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
-        </div>
+        </BentoGrid>
       ) : (
-        <div className="text-center py-20 p-8 border border-dashed border-zinc-800 rounded-2xl bg-zinc-900/30">
-          <Layers className="w-10 h-10 mx-auto text-zinc-600 mb-3" />
-          <h4 className="text-base font-semibold text-zinc-300 mb-1">No projects found</h4>
+        <div className="p-12 text-center rounded-2xl bg-zinc-900/50 border border-zinc-800 space-y-3">
+          <Layers className="w-8 h-8 text-zinc-600 mx-auto" />
+          <h3 className="text-base font-medium text-zinc-300">No projects found</h3>
           <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-            No projects matched your search criteria. Try modifying your search query or selecting a different track.
+            No projects matched your search criteria. Try a different query or reset category filters.
           </p>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedTrackId(null);
+            }}
+            className="px-4 py-2 text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg transition"
+          >
+            Clear Search & Filters
+          </button>
         </div>
       )}
     </div>
