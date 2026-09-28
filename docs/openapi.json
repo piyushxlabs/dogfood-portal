@@ -1,0 +1,224 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Dogfood 2026 Hackathon Portal API",
+    "version": "1.0.0",
+    "description": "High-performance, air-gapped hackathon submission, judging, and community platform API.",
+    "contact": {
+      "name": "Hackathon Raptors Architecture Team"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Air-Gapped Standalone Container"
+    }
+  ],
+  "tags": [
+    { "name": "Public", "description": "Public gallery and exploration endpoints" },
+    { "name": "Community", "description": "Community voting and discussions" },
+    { "name": "Judging", "description": "Judge scoring and evaluation console" },
+    { "name": "Organizer", "description": "Organizer administration, calibration and exports" },
+    { "name": "Platform API v1", "description": "Tier 4 REST API integrations and bulk dumps" }
+  ],
+  "paths": {
+    "/api/v1/projects": {
+      "get": {
+        "tags": ["Platform API v1"],
+        "summary": "List submitted projects",
+        "description": "Returns paginated list of non-draft projects with track and team metadata.",
+        "parameters": [
+          { "name": "track", "in": "query", "description": "Filter by track ID or name", "schema": { "type": "string" } },
+          { "name": "search", "in": "query", "description": "Search query for title and summary", "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "description": "Max items to return (1-100)", "schema": { "type": "integer", "default": 20 } },
+          { "name": "offset", "in": "query", "description": "Items offset", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated projects response" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/v1/tracks": {
+      "get": {
+        "tags": ["Platform API v1"],
+        "summary": "List competition tracks",
+        "description": "Returns all tracks along with current project submission counts.",
+        "responses": {
+          "200": { "description": "List of tracks" }
+        }
+      }
+    },
+    "/api/v1/leaderboard": {
+      "get": {
+        "tags": ["Platform API v1", "Organizer"],
+        "summary": "Calibrated leaderboard",
+        "description": "Returns robust Z-score normalized project rankings (Organizer auth required).",
+        "security": [{ "SessionAuth": [] }],
+        "responses": {
+          "200": { "description": "Calibrated leaderboard" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/api/v1/export/bulk": {
+      "post": {
+        "tags": ["Platform API v1", "Organizer"],
+        "summary": "Bulk platform archive dump",
+        "description": "Exports complete JSON archive of all events, tracks, teams, projects, scores, and calibration metrics.",
+        "security": [{ "SessionAuth": [] }],
+        "responses": {
+          "200": { "description": "Full platform archive dump" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/api/vote": {
+      "post": {
+        "tags": ["Community"],
+        "summary": "Cast community vote",
+        "description": "Records community vote with email deduplication. Enforces 1 vote per email per project.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["project_id", "voter_email"],
+                "properties": {
+                  "project_id": { "type": "string" },
+                  "voter_email": { "type": "string", "format": "email" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Vote recorded successfully" },
+          "400": { "description": "Validation error or invalid email syntax" },
+          "404": { "description": "Project not found" },
+          "409": { "description": "Conflict: Vote already cast for this project with this email" }
+        }
+      }
+    },
+    "/api/vote/results": {
+      "get": {
+        "tags": ["Community"],
+        "summary": "Community vote tallies",
+        "description": "Returns vote results. Masked with Anti-Bandwagon rule for visitors during active voting.",
+        "responses": {
+          "200": { "description": "Vote tallies or anti-bandwagon masked notice" }
+        }
+      }
+    },
+    "/api/projects/{id}/comments": {
+      "get": {
+        "tags": ["Community"],
+        "summary": "Get project discussion comments",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "List of sanitized comments" },
+          "404": { "description": "Project not found" }
+        }
+      },
+      "post": {
+        "tags": ["Community"],
+        "summary": "Post project comment",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["author_name", "author_email", "comment_text"],
+                "properties": {
+                  "author_name": { "type": "string" },
+                  "author_email": { "type": "string", "format": "email" },
+                  "comment_text": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Comment posted" },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+    "/api/webhooks": {
+      "post": {
+        "tags": ["Organizer"],
+        "summary": "Register event webhook",
+        "description": "Registers a target URL for automated event notifications (HMAC-SHA256 signed).",
+        "security": [{ "SessionAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["target_url"],
+                "properties": {
+                  "target_url": { "type": "string", "format": "uri" },
+                  "event_type": { "type": "string", "default": "*" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Webhook registered" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/api/judge/scores": {
+      "get": {
+        "tags": ["Judging"],
+        "summary": "Query judge scores",
+        "description": "Role-isolated score inquiry. Judge queries own scores (200), peer queries blocked (403).",
+        "security": [{ "SessionAuth": [] }],
+        "parameters": [
+          { "name": "judge", "in": "query", "description": "Target judge ID", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Scores array" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden peer score inquiry" }
+        }
+      }
+    },
+    "/api/export.csv": {
+      "get": {
+        "tags": ["Organizer"],
+        "summary": "Export calibrated CSV",
+        "description": "Streams CSV containing calibrated rankings, raw scores, normalized scores, and rank deltas.",
+        "security": [{ "SessionAuth": [] }],
+        "responses": {
+          "200": { "description": "CSV stream", "content": { "text/csv": {} } },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "SessionAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session",
+        "description": "Session cookie or Authorization: Bearer <session_id>"
+      }
+    }
+  }
+}

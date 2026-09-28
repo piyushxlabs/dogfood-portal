@@ -27,37 +27,41 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
+acceptance-report.txt
 
-# system files
+# system & IDE files
 .DS_Store
+Thumbs.db
 *.pem
+.vscode/
+.idea/
 
-# typescript cache
+# typescript & build cache
 *.tsbuildinfo
 next-env.d.ts
 
+# python cache
+__pycache__/
+*.py[cod]
+*$py.class
 
-
+# internal AI agent tracking & dev process (local only)
 .agents/
 .agents
-
-
-# Internal AI Agent / Dev-process files (not for public repo)
 progress_log.md
 project_state.md
 TECHNICAL_NOTES.md
 do_after_completion.md
 CLAUDE.md
 
-# AI coding assistant configuration
-.agents/
-
-# Internal specification docs (kept local only)
-docs/
-.docs/
-
-# Raw Demo Video Footage & Local Scratch Slides
+# raw demo video footage, audio & scratch files
 demo video/
+"demo video asset"/
+demo video asset/
 *.mp4
 *.mp3
+*.mov
+*.wav
+*.avi
 clipcrop_slides.html
